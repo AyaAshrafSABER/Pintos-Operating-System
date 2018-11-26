@@ -4,6 +4,7 @@
 #include <random.h>
 #include <stdio.h>
 #include <string.h>
+#include <devices/timer.h>
 #include "threads/flags.h"
 #include "threads/interrupt.h"
 #include "threads/intr-stubs.h"
@@ -27,6 +28,8 @@ static struct list ready_list;
 /* List of all processes.  Processes are added to this list
    when they are first scheduled and removed when they exit. */
 static struct list all_list;
+
+static struct list priority_queues_mlfqs [PRI_MAX - PRI_MIN];
 
 /* Idle thread. */
 static struct thread *idle_thread;
@@ -59,6 +62,8 @@ static unsigned thread_ticks;   /* # of timer ticks since last yield. */
    Controlled by kernel command-line option "-o mlfqs". */
 bool thread_mlfqs;
 
+int highest_priority = 0;
+
 static void kernel_thread (thread_func *, void *aux);
 
 static void idle (void *aux UNUSED);
@@ -74,6 +79,12 @@ static tid_t allocate_tid (void);
 static int update_priority_mlfqs(struct thread *thread);
 
 static void insert_into_priority_queue_mlfqs(struct thread *thread);
+
+void init_priority_queues_mlfqs();
+
+void recalculate_threads_priorities_mlfqs();
+
+void recalculate_recent_cpu_for_all_mlfqs();
 
 /* Initializes the threading system by transforming the code
  that's currently running into a thread.  This can't work in
@@ -99,6 +110,8 @@ thread_init (void)
 
   load_avg = 0;
 
+  init_priority_queues_mlfqs();
+
   /* Set up a thread structure for the running thread. */
   initial_thread = running_thread ();
   init_thread (initial_thread, "main", PRI_DEFAULT);
@@ -123,8 +136,6 @@ thread_start (void)
   sema_down (&idle_started);
 }
 
-int highest_priority = 0;
-
 /* Called by the timer interrupt handler at each timer tick.
    Thus, this function runs in an external interrupt context. */
 void
@@ -142,16 +153,21 @@ thread_tick (void)
   else
     kernel_ticks++;
 
-  if(thread_ticks % TIME_SLICE == 0 && thread_mlfqs){
+  t->recent_cpu++;
 
-      int priority = update_priority_mlfqs(t);
+  if(thread_mlfqs && (timer_ticks () % TIMER_FREQ == 0)){
+      recalculate_recent_cpu_for_all_mlfqs();
 
-      if(priority < highest_priority){
+      //TODO: Recalculate load_avg
+  }
+
+  if(thread_mlfqs && (timer_ticks () % TIME_SLICE == 0) ){
+
+      recalculate_threads_priorities_mlfqs();
+
+      if(t->priority < highest_priority){
           thread_yield();
           //TODO: Check if return is needed!
-      }
-      else {
-          highest_priority = priority;
       }
   }
 
@@ -159,6 +175,7 @@ thread_tick (void)
   if (++thread_ticks >= TIME_SLICE)
     intr_yield_on_return ();
 }
+
 
 /* Prints thread statistics. */
 void
@@ -372,6 +389,7 @@ void
 thread_set_nice (int nice UNUSED)
 {
   thread_current ()->niceness = nice;
+  update_priority_mlfqs(thread_current());
 }
 
 /* Returns the current thread's nice value. */
@@ -516,9 +534,10 @@ next_thread_to_run (void)
 {
   if (list_empty (&ready_list))
     return idle_thread;
+
   else if(thread_mlfqs)
-    //TODO: Implement next thread to run for mlfqs
-    return NULL;
+    return list_entry (list_pop_front (&priority_queues_mlfqs[highest_priority]), struct thread, elem);
+
   else
     return list_entry (list_pop_front (&ready_list), struct thread, elem);
 }
@@ -581,7 +600,8 @@ schedule (void)
 {
   struct thread *cur = running_thread ();
 
-  insert_into_priority_queue_mlfqs(cur);
+  if(cur->status == THREAD_READY)
+    insert_into_priority_queue_mlfqs(cur);
 
   struct thread *next = next_thread_to_run ();
   struct thread *prev = NULL;
@@ -620,8 +640,50 @@ static int update_priority_mlfqs(struct thread *thread) {
     return 0;
 }
 
+void recalculate_threads_priorities_mlfqs() {
+    if(!thread_mlfqs) return;
+
+    int i, j;
+    for(i = 0; i < (PRI_MAX - PRI_MIN); i++){
+        for(j = 0; j < list_size(&priority_queues_mlfqs[i]); j++){
+            struct thread *front_thread =
+                    list_entry (list_pop_front (&priority_queues_mlfqs[highest_priority]), struct thread, elem);
+
+            int new_priority = update_priority_mlfqs(front_thread);
+
+            insert_into_priority_queue_mlfqs(front_thread);
+
+            if(new_priority > highest_priority){
+                highest_priority = new_priority;
+            }
+        }
+    }
+}
+
 static void insert_into_priority_queue_mlfqs(struct thread *thread) {
-    if(thread_mlfqs){
-        //TODO:Implement
+  if(thread_mlfqs){
+    list_push_back(&priority_queues_mlfqs[thread->priority], &thread->elem);
+  }
+}
+
+void recalculate_recent_cpu_for_all_mlfqs() {
+
+    struct list_elem *listElem;
+
+    for (listElem = list_begin (&all_list); listElem != list_end (&all_list);
+         listElem = list_next (listElem))
+    {
+        struct thread *thread = list_entry (listElem, struct thread, elem);
+
+        //TODO: Recalculate recent_cpu
+    }
+
+}
+void init_priority_queues_mlfqs() {
+    if(!thread_mlfqs) return;
+
+    int i;
+    for( i = 0; i < (PRI_MAX - PRI_MIN); i++){
+        list_init(&priority_queues_mlfqs[i]);
     }
 }
