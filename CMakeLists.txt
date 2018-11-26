@@ -3,9 +3,12 @@ project(pintos C)
 
 set(CMAKE_C_STANDARD 11)
 
+include_directories(.)
 include_directories(specs)
 include_directories(specs/kbd)
+include_directories(src)
 include_directories(src/devices)
+include_directories(src/examples)
 include_directories(src/filesys)
 include_directories(src/lib)
 include_directories(src/lib/kernel)
@@ -19,6 +22,7 @@ include_directories(src/tests/userprog)
 include_directories(src/tests/vm)
 include_directories(src/threads)
 include_directories(src/userprog)
+include_directories(src/utils)
 
 add_executable(pintos
         specs/kbd/table.h
