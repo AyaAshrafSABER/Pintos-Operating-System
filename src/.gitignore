@@ -5,4 +5,7 @@ tags
 /utils/pintos
 /utils/Pintos.pm
 /utils/pintos-gdb
+/utils/bpintos
+/utils/bPintos.pm
+/utils/bpintos-gdb
 /threads/Make.vars
