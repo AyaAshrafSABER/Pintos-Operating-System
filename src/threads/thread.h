@@ -110,7 +110,8 @@ struct thread
    Controlled by kernel command-line option "-o mlfqs". */
 extern bool thread_mlfqs;
 
-int load_avg;
+int load_avg;           /* is considered shared data */
+struct lock *load_avg_mutex;
 
 void thread_init (void);
 void thread_start (void);
