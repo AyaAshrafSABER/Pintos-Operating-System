@@ -11,6 +11,8 @@
 #include "threads/switch.h"
 #include "threads/synch.h"
 #include "threads/vaddr.h"
+#include "fixed-point.h"
+
 #ifdef USERPROG
 #include "userprog/process.h"
 #endif
@@ -98,6 +100,7 @@ thread_init (void)
   list_init (&all_list);
 
   load_avg = 0;
+  lock_init(&load_avg_mutex);
 
   /* Set up a thread structure for the running thread. */
   initial_thread = running_thread ();
@@ -329,8 +332,9 @@ thread_yield (void)
   ASSERT (!intr_context ());
 
   old_level = intr_disable ();
-  if (cur != idle_thread)
-    list_push_back (&ready_list, &cur->elem);
+  if (cur != idle_thread) {
+      list_push_back(&ready_list, &cur->elem);
+  }
   cur->status = THREAD_READY;
   schedule ();
   intr_set_level (old_level);
@@ -385,15 +389,14 @@ thread_get_nice (void)
 int
 thread_get_load_avg (void)
 {
-  /* Not yet implemented. */
-  return 0;
+    return convert_fp_to_int_rounding(100 * load_avg);
 }
 
 /* Returns 100 times the current thread's recent_cpu value. */
 int
 thread_get_recent_cpu (void)
 {
-  return thread_current ()->recent_cpu;
+  return convert_fp_to_int_rounding(100 * thread_current()->recent_cpu);
 }
 
 /* Idle thread.  Executes when no other thread is ready to run.
@@ -519,8 +522,9 @@ next_thread_to_run (void)
   else if(thread_mlfqs)
     //TODO: Implement next thread to run for mlfqs
     return NULL;
-  else
-    return list_entry (list_pop_front (&ready_list), struct thread, elem);
+  else {
+      return list_entry (list_pop_front(&ready_list), struct thread, elem);
+  }
 }
 
 /* Completes a thread switch by activating the new thread's page
@@ -616,8 +620,12 @@ uint32_t thread_stack_ofs = offsetof (struct thread, stack);
 
 
 static int update_priority_mlfqs(struct thread *thread) {
-//TODO: Implement using Fixed-point
-    return 0;
+    // calculate the coefficient first to avoid overflow.
+    int coeff = convert_fp_to_int((2*thread_get_load_avg())/(2 * thread_get_load_avg() + 1));
+    thread->recent_cpu = coeff * thread->recent_cpu + thread->niceness;
+    int priorty = PRI_MAX - multiply_int_by_fp(thread->recent_cpu, 0.25) - thread->niceness * 2;
+    thread->priority = priorty;
+    return priorty;
 }
 
 static void insert_into_priority_queue_mlfqs(struct thread *thread) {
