@@ -21,6 +21,8 @@
    of thread.h for details. */
 #define THREAD_MAGIC 0xcd6abf4b
 
+#define PRIORITIES_COUNT (PRI_MAX - PRI_MIN + 1)
+
 /* List of processes in THREAD_READY state, that is, processes
    that are ready to run but not actually running. */
 static struct list ready_list;
@@ -29,7 +31,7 @@ static struct list ready_list;
    when they are first scheduled and removed when they exit. */
 static struct list all_list;
 
-static struct list priority_queues_mlfqs [PRI_MAX - PRI_MIN];
+static struct list priority_queues_mlfqs [PRIORITIES_COUNT];
 
 /* Idle thread. */
 static struct thread *idle_thread;
@@ -55,6 +57,7 @@ static long long user_ticks;    /* # of timer ticks in user programs. */
 
 /* Scheduling. */
 #define TIME_SLICE 4            /* # of timer ticks to give each thread. */
+
 static unsigned thread_ticks;   /* # of timer ticks since last yield. */
 
 /* If false (default), use round-robin scheduler.
@@ -644,7 +647,7 @@ void recalculate_threads_priorities_mlfqs() {
     if(!thread_mlfqs) return;
 
     int i, j;
-    for(i = 0; i < (PRI_MAX - PRI_MIN); i++){
+    for(i = 0; i < (PRIORITIES_COUNT); i++){
         for(j = 0; j < list_size(&priority_queues_mlfqs[i]); j++){
             struct thread *front_thread =
                     list_entry (list_pop_front (&priority_queues_mlfqs[highest_priority]), struct thread, elem);
@@ -683,7 +686,7 @@ void init_priority_queues_mlfqs() {
     if(!thread_mlfqs) return;
 
     int i;
-    for( i = 0; i < (PRI_MAX - PRI_MIN); i++){
+    for( i = 0; i < (PRIORITIES_COUNT); i++){
         list_init(&priority_queues_mlfqs[i]);
     }
 }
