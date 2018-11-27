@@ -1,0 +1,8 @@
+CMakeLists.txt
+cmake-build-debug/
+src/threads/Make.vars
+src/utils/Pintos.pm
+src/utils/pintos
+src/utils/pintos-gdb
+.idea/
+
