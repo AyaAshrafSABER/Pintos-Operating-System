@@ -165,7 +165,7 @@ thread_tick (void)
   if(thread_mlfqs && (timer_ticks () % TIMER_FREQ == 0)){
       recalculate_recent_cpu_for_all_mlfqs();
 
-      //TODO: Recalculate load_avg
+      calculate_load_avg_mlfqs();
   }
 
   if(thread_mlfqs && (timer_ticks () % TIME_SLICE == 0) ){
