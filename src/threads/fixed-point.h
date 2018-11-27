@@ -16,11 +16,11 @@
 
 #define F (1 << 14)     /* 17.14 format */
 
-int convert_int_to_fp(int n) {
+float convert_int_to_fp(int n) {
     return n * F;
 }
 
-int convert_fp_to_int(int x) {
+int convert_fp_to_int(float x) {
     return x / F;
 }
 
@@ -31,34 +31,34 @@ int convert_fp_to_int_rounding(float x) {
         return (x - F / 2) / F;
 }
 
-int add_fp(float x, float y) {
+float add_fp(float x, float y) {
     return x + y;
 }
 
-int subtract_fp(float x, float y) {
+float subtract_fp(float x, float y) {
     return x - y;
 }
 
-int add_int_to_fp(int n, float x) {
+float add_int_to_fp(int n, float x) {
     return x + n * F;
 }
 
-int subtract_int_from_fp(int n, float x) {
+float subtract_int_from_fp(int n, float x) {
     return x - n * F;
 }
 
-int multiply_fp(float x, float y) {
+float multiply_fp(float x, float y) {
     return ((int64_t) x) * y / F;
 }
 
-int multiply_int_by_fp(int n, float x) {
+float multiply_int_by_fp(int n, float x) {
     return 	x * n;
 }
 
-int divide_fp(float x, float y) {
+float divide_fp(float x, float y) {
     return ((int64_t) x) * F / y;
 }
 
-int divide_fp_by_int(float x, int n) {
+float divide_fp_by_int(float x, int n) {
     return 	x / n;
 }

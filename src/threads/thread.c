@@ -77,6 +77,7 @@ static int update_priority_mlfqs(struct thread *thread);
 
 static void insert_into_priority_queue_mlfqs(struct thread *thread);
 
+int calculate_load_avg_mlfqs();
 /* Initializes the threading system by transforming the code
  that's currently running into a thread.  This can't work in
  general and it is possible in this case only because loader.S
@@ -389,16 +390,31 @@ thread_get_nice (void)
 int
 thread_get_load_avg (void)
 {
-    return convert_fp_to_int_rounding(100 * load_avg);
+    float ldavg = convert_int_to_fp(load_avg);
+    return convert_fp_to_int_rounding(multiply_int_by_fp(100, ldavg));
 }
 
 /* Returns 100 times the current thread's recent_cpu value. */
 int
 thread_get_recent_cpu (void)
 {
-  return convert_fp_to_int_rounding(100 * thread_current()->recent_cpu);
+    float cpu = convert_int_to_fp(thread_current()->recent_cpu);
+    return convert_fp_to_int_rounding(multiply_int_by_fp(100, cpu));
 }
-
+
+/* Calculates the load average and updates it
+ * using the formula:
+ * load_avg = (59/60)*load_avg + (1/60)*ready_threads
+ */
+int calculate_load_avg_mlfqs() {
+  float firstTerm = divide_fp_by_int(convert_int_to_fp(50), 60);
+  firstTerm = multiply_fp(firstTerm, convert_int_to_fp(load_avg));
+  float secondTerm = list_size(&ready_list);
+  if (thread_current() != idle_thread)
+      secondTerm++;
+  secondTerm = divide_fp_by_int(secondTerm, 60);
+  load_avg = convert_fp_to_int(add_fp(firstTerm, secondTerm));
+}
 /* Idle thread.  Executes when no other thread is ready to run.
 
    The idle thread is initially put on the ready list by
@@ -618,14 +634,24 @@ allocate_tid (void)
    Used by switch.S, which can't figure it out on its own. */
 uint32_t thread_stack_ofs = offsetof (struct thread, stack);
 
-
+/*
+ * Updating the priority of the given thread in the
+ * advanced scheduler mode.
+ */
 static int update_priority_mlfqs(struct thread *thread) {
-    // calculate the coefficient first to avoid overflow.
-    int coeff = convert_fp_to_int((2*thread_get_load_avg())/(2 * thread_get_load_avg() + 1));
-    thread->recent_cpu = coeff * thread->recent_cpu + thread->niceness;
-    int priorty = PRI_MAX - multiply_int_by_fp(thread->recent_cpu, 0.25) - thread->niceness * 2;
-    thread->priority = priorty;
-    return priorty;
+    // calculate the coefficient of the recent_cpu first to avoid overflow.
+    // using the formula:
+    // recent_cpu = (2*load_avg)/(2*load_avg + 1) * recent_cpu + nice
+    float coeff = multiply_int_by_fp(2, convert_int_to_fp(thread_get_load_avg()));
+    coeff = divide_fp(coeff, add_fp(coeff, 1));
+    float cpu = multiply_fp(coeff, convert_int_to_fp(thread->recent_cpu));
+    cpu = add_fp(cpu, convert_int_to_fp(thread->niceness));
+    thread->recent_cpu = convert_fp_to_int(cpu);
+    // priority = PRI_MAX - (recent_cpu / 4) - (nice * 2).
+    float priority = subtract_fp(divide_fp(cpu, 4), multiply_int_by_fp(2, thread->niceness));
+    priority = subtract_fp(convert_int_to_fp(PRI_MAX), priority);
+    thread->priority = convert_fp_to_int(priority);
+    return thread->priority;
 }
 
 static void insert_into_priority_queue_mlfqs(struct thread *thread) {
