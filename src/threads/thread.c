@@ -222,6 +222,13 @@ thread_create (const char *name, int priority,
 
   /* Add to run queue. */
   thread_unblock (t);
+//*********************>>> Priority Scheduling implementation <<*****************************//
+    /* Forcing preemption, when thread_current() priority is less than
+       a ready thread of higher priority in priority queue scheduler. */
+    if(priority >thread_current()->priority) {
+        thread_yield();
+    }
+//******************************************>>><<<*************************************************//
 
   return tid;
 }
@@ -261,6 +268,11 @@ thread_unblock (struct thread *t)
   ASSERT (t->status == THREAD_BLOCKED);
   list_push_back (&ready_list, &t->elem);
   t->status = THREAD_READY;
+  //*********************>>> Priority Scheduling implementation <<*****************************//
+  /* Checks for a possible preemption. */
+  if(!intr_context () && thread_current() != idle_thread && thread_current()->priority < t->priority)
+      thread_yield();
+  //*************************************>>><<*************************************//
   intr_set_level (old_level);
 }
 
@@ -356,8 +368,30 @@ thread_foreach (thread_action_func *func, void *aux)
 /* Sets the current thread's priority to NEW_PRIORITY. */
 void
 thread_set_priority (int new_priority)
-{
-  thread_current ()->priority = new_priority;
+{    //Todo : set priority checking
+    //*********************>>> Priority Scheduling implementation <<*****************************//
+
+    if(thread_mlfqs)
+        return;
+    /* Disabling the interrupt. */
+    enum intr_level old_level;
+    old_level = intr_disable ();
+    bool schedule_needed = false;
+    if (thread_current()->priority < new_priority) {
+        thread_current()->priority = new_priority;
+    } else if (thread_current ()->initial_priority == thread_current ()->priority){      //donating threads's
+        if(thread_current()->priority > new_priority){
+            schedule_needed = true;
+        }
+        thread_current()->priority = new_priority;
+    }
+   // thread_current ()->initial_priority = new_priority;
+    if(schedule_needed){
+        thread_yield();
+    }
+    /* Enabling the interrupt. */
+    intr_set_level (old_level);
+    //*********************>><<*****************************//
 }
 
 /* Returns the current thread's priority. */
@@ -485,9 +519,18 @@ init_thread (struct thread *t, const char *name, int priority)
   t->magic = THREAD_MAGIC;
   t->recent_cpu = 0;
   t->niceness = 0;
+//*********************>>> Priority Scheduling implementation <<*****************************//
+  list_init(&t->held_locks);	/* Initialize Thread acquired locks list. */
+  t->lock_waited_on = NULL;	    /* Initialize Thread waiting on lock. */
 
-  if(thread_mlfqs) update_priority_mlfqs(t);
-
+  if(thread_mlfqs) {
+      update_priority_mlfqs(t);
+  }
+    //*********************>>> Priority Scheduling implementation <<*****************************//
+  else {
+      t->initial_priority = t->priority = priority;
+   } /*else, set Thread's priority with priority argument. */
+    //*********************>>><<*****************************//
   old_level = intr_disable ();
   list_push_back (&all_list, &t->allelem);
   intr_set_level (old_level);
@@ -519,8 +562,17 @@ next_thread_to_run (void)
   else if(thread_mlfqs)
     //TODO: Implement next thread to run for mlfqs
     return NULL;
-  else
-    return list_entry (list_pop_front (&ready_list), struct thread, elem);
+  else{
+//*********************>>> Priority Scheduling implementation <<*****************************//
+        list_less_func *comparator;
+        comparator = compare_threads_priority;
+
+        struct list_elem *maximum_pop =  list_max(&ready_list, comparator, NULL);
+        list_remove(maximum_pop);
+        return list_entry(maximum_pop,struct thread, elem);
+
+    }
+//*********************>>><<*****************************//
 }
 
 /* Completes a thread switch by activating the new thread's page
@@ -625,3 +677,22 @@ static void insert_into_priority_queue_mlfqs(struct thread *thread) {
         //TODO:Implement
     }
 }
+//*********************>>> Priority Scheduling implementation <<*****************************//
+
+/* Compares threads' priorities, sorting them in descending order according to
+       their priorities. */
+bool compare_threads_priority(const struct list_elem *a, const struct list_elem *b, void *aux UNUSED) {
+    return list_entry(a, struct thread, elem)->priority < list_entry(b, struct thread, elem)->priority;
+}
+/* Implements donation in case of priority schedular. */
+void thread_update_priority(struct thread *t) {
+    struct thread* node = t;
+    int priority = t->priority;
+    //TOdo : handle 8 level of donation
+    while(node->lock_waited_on != NULL && node->lock_waited_on->holder != NULL
+          && priority > node->lock_waited_on->holder->priority) {
+        node->lock_waited_on->holder->priority = priority;
+        node = node->lock_waited_on->holder; //other thread may wait on him
+    }
+}
+//*********************>>><<*****************************//

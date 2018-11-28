@@ -44,9 +44,12 @@
 				<Option type="1"/>
 				<Option compiler="gcc"/>
 				<Compiler>
+					<Add directory="/home/aya/hdh/pintos/."/>
 					<Add directory="/home/aya/hdh/pintos/specs"/>
 					<Add directory="/home/aya/hdh/pintos/specs/kbd"/>
+					<Add directory="/home/aya/hdh/pintos/src"/>
 					<Add directory="/home/aya/hdh/pintos/src/devices"/>
+					<Add directory="/home/aya/hdh/pintos/src/examples"/>
 					<Add directory="/home/aya/hdh/pintos/src/filesys"/>
 					<Add directory="/home/aya/hdh/pintos/src/lib"/>
 					<Add directory="/home/aya/hdh/pintos/src/lib/kernel"/>
@@ -60,6 +63,10 @@
 					<Add directory="/home/aya/hdh/pintos/src/tests/vm"/>
 					<Add directory="/home/aya/hdh/pintos/src/threads"/>
 					<Add directory="/home/aya/hdh/pintos/src/userprog"/>
+					<Add directory="/home/aya/hdh/pintos/src/utils"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
 					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
 					<Add directory="/usr/local/include"/>
 					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>
@@ -80,9 +87,12 @@
 				<Option type="1"/>
 				<Option compiler="gcc"/>
 				<Compiler>
+					<Add directory="/home/aya/hdh/pintos/."/>
 					<Add directory="/home/aya/hdh/pintos/specs"/>
 					<Add directory="/home/aya/hdh/pintos/specs/kbd"/>
+					<Add directory="/home/aya/hdh/pintos/src"/>
 					<Add directory="/home/aya/hdh/pintos/src/devices"/>
+					<Add directory="/home/aya/hdh/pintos/src/examples"/>
 					<Add directory="/home/aya/hdh/pintos/src/filesys"/>
 					<Add directory="/home/aya/hdh/pintos/src/lib"/>
 					<Add directory="/home/aya/hdh/pintos/src/lib/kernel"/>
@@ -96,6 +106,10 @@
 					<Add directory="/home/aya/hdh/pintos/src/tests/vm"/>
 					<Add directory="/home/aya/hdh/pintos/src/threads"/>
 					<Add directory="/home/aya/hdh/pintos/src/userprog"/>
+					<Add directory="/home/aya/hdh/pintos/src/utils"/>
+					<Add directory="/usr/include/c++/7"/>
+					<Add directory="/usr/include/x86_64-linux-gnu/c++/7"/>
+					<Add directory="/usr/include/c++/7/backward"/>
 					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include"/>
 					<Add directory="/usr/local/include"/>
 					<Add directory="/usr/lib/gcc/x86_64-linux-gnu/7/include-fixed"/>

@@ -1485,15 +1485,20 @@ CMakeFiles/pintos.dir/src/threads/palloc.c.o: ../src/lib/string.h
 CMakeFiles/pintos.dir/src/threads/palloc.c.o: ../src/threads/palloc.c
 
 CMakeFiles/pintos.dir/src/threads/synch.c.o: ../src/lib/debug.h
+CMakeFiles/pintos.dir/src/threads/synch.c.o: ../src/lib/kernel/list.h
 CMakeFiles/pintos.dir/src/threads/synch.c.o: ../src/lib/stdarg.h
 CMakeFiles/pintos.dir/src/threads/synch.c.o: ../src/lib/stdbool.h
 CMakeFiles/pintos.dir/src/threads/synch.c.o: ../src/lib/stddef.h
 CMakeFiles/pintos.dir/src/threads/synch.c.o: ../src/lib/stdint.h
 CMakeFiles/pintos.dir/src/threads/synch.c.o: ../src/lib/stdio.h
 CMakeFiles/pintos.dir/src/threads/synch.c.o: ../src/lib/string.h
+CMakeFiles/pintos.dir/src/threads/synch.c.o: ../src/threads/interrupt.h
+CMakeFiles/pintos.dir/src/threads/synch.c.o: ../src/threads/synch.h
+CMakeFiles/pintos.dir/src/threads/synch.c.o: ../src/threads/thread.h
 CMakeFiles/pintos.dir/src/threads/synch.c.o: ../src/threads/synch.c
 
 CMakeFiles/pintos.dir/src/threads/thread.c.o: ../src/lib/debug.h
+CMakeFiles/pintos.dir/src/threads/thread.c.o: ../src/lib/kernel/list.h
 CMakeFiles/pintos.dir/src/threads/thread.c.o: ../src/lib/random.h
 CMakeFiles/pintos.dir/src/threads/thread.c.o: ../src/lib/stdarg.h
 CMakeFiles/pintos.dir/src/threads/thread.c.o: ../src/lib/stdbool.h
@@ -1501,6 +1506,16 @@ CMakeFiles/pintos.dir/src/threads/thread.c.o: ../src/lib/stddef.h
 CMakeFiles/pintos.dir/src/threads/thread.c.o: ../src/lib/stdint.h
 CMakeFiles/pintos.dir/src/threads/thread.c.o: ../src/lib/stdio.h
 CMakeFiles/pintos.dir/src/threads/thread.c.o: ../src/lib/string.h
+CMakeFiles/pintos.dir/src/threads/thread.c.o: ../src/threads/flags.h
+CMakeFiles/pintos.dir/src/threads/thread.c.o: ../src/threads/interrupt.h
+CMakeFiles/pintos.dir/src/threads/thread.c.o: ../src/threads/intr-stubs.h
+CMakeFiles/pintos.dir/src/threads/thread.c.o: ../src/threads/loader.h
+CMakeFiles/pintos.dir/src/threads/thread.c.o: ../src/threads/palloc.h
+CMakeFiles/pintos.dir/src/threads/thread.c.o: ../src/threads/switch.h
+CMakeFiles/pintos.dir/src/threads/thread.c.o: ../src/threads/synch.h
+CMakeFiles/pintos.dir/src/threads/thread.c.o: ../src/threads/thread.h
+CMakeFiles/pintos.dir/src/threads/thread.c.o: ../src/threads/vaddr.h
+CMakeFiles/pintos.dir/src/threads/thread.c.o: ../src/userprog/process.h
 CMakeFiles/pintos.dir/src/threads/thread.c.o: ../src/threads/thread.c
 
 CMakeFiles/pintos.dir/src/userprog/exception.c.o: ../src/lib/debug.h

@@ -1486,15 +1486,20 @@ CMakeFiles/pintos.dir/src/threads/palloc.c.o
  /home/aya/hdh/pintos/src/threads/palloc.c
 CMakeFiles/pintos.dir/src/threads/synch.c.o
  ../src/lib/debug.h
+ ../src/lib/kernel/list.h
  ../src/lib/stdarg.h
  ../src/lib/stdbool.h
  ../src/lib/stddef.h
  ../src/lib/stdint.h
  ../src/lib/stdio.h
  ../src/lib/string.h
+ ../src/threads/interrupt.h
+ ../src/threads/synch.h
+ ../src/threads/thread.h
  /home/aya/hdh/pintos/src/threads/synch.c
 CMakeFiles/pintos.dir/src/threads/thread.c.o
  ../src/lib/debug.h
+ ../src/lib/kernel/list.h
  ../src/lib/random.h
  ../src/lib/stdarg.h
  ../src/lib/stdbool.h
@@ -1502,6 +1507,16 @@ CMakeFiles/pintos.dir/src/threads/thread.c.o
  ../src/lib/stdint.h
  ../src/lib/stdio.h
  ../src/lib/string.h
+ ../src/threads/flags.h
+ ../src/threads/interrupt.h
+ ../src/threads/intr-stubs.h
+ ../src/threads/loader.h
+ ../src/threads/palloc.h
+ ../src/threads/switch.h
+ ../src/threads/synch.h
+ ../src/threads/thread.h
+ ../src/threads/vaddr.h
+ ../src/userprog/process.h
  /home/aya/hdh/pintos/src/threads/thread.c
 CMakeFiles/pintos.dir/src/userprog/exception.c.o
  ../src/lib/debug.h

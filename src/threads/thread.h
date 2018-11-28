@@ -92,9 +92,16 @@ struct thread
 
     int niceness;
     int recent_cpu;
+    //*********************>>> Priority Scheduling implementation <<*****************************//
+    int64_t endTicks; /*time to end thread*/
+    int initial_priority;		/* Thread initial priority initialized on create time.*/
+    struct lock *lock_waited_on;	/* Lock the thread is waiting on. Threads can be locked on only one lock.*/
+    struct list held_locks; 		/* Locks held by the thread. Threads can acquire as many locks as possible.*/
+    //******************************************>>><<<*************************************************//
 
     /* Shared between thread.c and synch.c. */
     struct list_elem elem;              /* List element. */
+
 
 #ifdef USERPROG
     /* Owned by userprog/process.c. */
@@ -142,5 +149,16 @@ int thread_get_nice (void);
 void thread_set_nice (int);
 int thread_get_recent_cpu (void);
 int thread_get_load_avg (void);
+//*********************>>> Priority Scheduling implementation <<*****************************//
+/* Assigns list_less_func. */
+bool compare_threads_priority(const struct list_elem *a,
+                              const struct list_elem *b,
+                              void *aux);
+
+/* Updating threads priority through donation
+ in prioroty queue scheduler. */
+void thread_update_priority(struct thread *t);
+//******************************************>>><<<*************************************************//
+
 
 #endif /* threads/thread.h */

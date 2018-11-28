@@ -260,9 +260,12 @@ set(CMAKE_C_COMPILER_ID "GNU")
 
 # The include file search paths:
 set(CMAKE_C_TARGET_INCLUDE_PATH
+  "../."
   "../specs"
   "../specs/kbd"
+  "../src"
   "../src/devices"
+  "../src/examples"
   "../src/filesys"
   "../src/lib"
   "../src/lib/kernel"
@@ -276,6 +279,7 @@ set(CMAKE_C_TARGET_INCLUDE_PATH
   "../src/tests/vm"
   "../src/threads"
   "../src/userprog"
+  "../src/utils"
   )
 
 # Targets to which this target links.
