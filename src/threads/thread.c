@@ -91,7 +91,10 @@ void recalculate_threads_priorities_mlfqs();
 
 void recalculate_recent_cpu_for_all_mlfqs();
 
-int calculate_load_avg_mlfqs();
+int update_load_avg_mlfqs();
+
+void update_recent_cpu(struct thread *thread);
+
 /* Initializes the threading system by transforming the code
  that's currently running into a thread.  This can't work in
  general and it is possible in this case only because loader.S
@@ -160,15 +163,15 @@ thread_tick (void)
   else
     kernel_ticks++;
 
-  t->recent_cpu++;
+  add_int_to_fp(t->recent_cpu, 1);
 
   if(thread_mlfqs && (timer_ticks () % TIMER_FREQ == 0)){
       recalculate_recent_cpu_for_all_mlfqs();
 
-      calculate_load_avg_mlfqs();
+      update_load_avg_mlfqs();
   }
 
-  if(thread_mlfqs && (timer_ticks () % TIME_SLICE == 0) ){
+  if(thread_mlfqs && (thread_ticks % TIME_SLICE == 0) ){
 
       recalculate_threads_priorities_mlfqs();
 
@@ -396,7 +399,14 @@ thread_get_priority (void)
 void
 thread_set_nice (int nice UNUSED)
 {
+    if(nice > NICE_MAX){
+        nice = NICE_MAX;
+    }else if (nice < NICE_MIN){
+        nice = NICE_MIN;
+    }
+
   thread_current ()->niceness = nice;
+
   update_priority_mlfqs(thread_current());
 }
 
@@ -411,30 +421,33 @@ thread_get_nice (void)
 int
 thread_get_load_avg (void)
 {
-    float ldavg = convert_int_to_fp(load_avg);
-    return convert_fp_to_int_rounding(multiply_int_by_fp(100, ldavg));
+    return convert_fp_to_int_rounding(multiply_int_by_fp(100, load_avg));
 }
 
 /* Returns 100 times the current thread's recent_cpu value. */
 int
 thread_get_recent_cpu (void)
 {
-    float cpu = convert_int_to_fp(thread_current()->recent_cpu);
-    return convert_fp_to_int_rounding(multiply_int_by_fp(100, cpu));
+    return convert_fp_to_int_rounding(multiply_int_by_fp(100, thread_current()->recent_cpu));
 }
 
 /* Calculates the load average and updates it
  * using the formula:
  * load_avg = (59/60)*load_avg + (1/60)*ready_threads
  */
-int calculate_load_avg_mlfqs() {
-  float firstTerm = divide_fp_by_int(convert_int_to_fp(50), 60);
-  firstTerm = multiply_fp(firstTerm, convert_int_to_fp(load_avg));
-  float secondTerm = list_size(&ready_list);
-  if (thread_current() != idle_thread)
-      secondTerm++;
-  secondTerm = divide_fp_by_int(secondTerm, 60);
-  load_avg = convert_fp_to_int(add_fp(firstTerm, secondTerm));
+int update_load_avg_mlfqs() {
+  int fp_fifty_nine = convert_int_to_fp(59);
+  int first_fraction  = divide_fp_by_int(fp_fifty_nine, 60);
+
+  int ready_threads = list_size(&ready_list);
+  if(thread_current()!=idle_thread) ready_threads++;
+
+  int fp_ready_threads = convert_int_to_fp(ready_threads);
+  int second_term = divide_fp_by_int(fp_ready_threads, 60);
+  int first_term = multiply_fp(first_fraction, load_avg);
+
+  load_avg = add_fp(first_term, second_term);
+    return load_avg;
 }
 /* Idle thread.  Executes when no other thread is ready to run.
 
@@ -523,8 +536,8 @@ init_thread (struct thread *t, const char *name, int priority)
   t->stack = (uint8_t *) t + PGSIZE;
   t->priority = priority;
   t->magic = THREAD_MAGIC;
-  t->recent_cpu = 0;
-  t->niceness = 0;
+  t->recent_cpu = RECENT_CPU_DEFAULT;
+  t->niceness = NICE_DEFAULT;
 
   if(thread_mlfqs) update_priority_mlfqs(t);
 
@@ -660,20 +673,25 @@ uint32_t thread_stack_ofs = offsetof (struct thread, stack);
 /*
  * Updating the priority of the given thread in the
  * advanced scheduler mode.
+ * priority = PRI_MAX - (recent_cpu / 4) - (nice * 2).
  */
 static int update_priority_mlfqs(struct thread *thread) {
-    // calculate the coefficient of the recent_cpu first to avoid overflow.
-    // using the formula:
-    // recent_cpu = (2*load_avg)/(2*load_avg + 1) * recent_cpu + nice
-    float coeff = multiply_int_by_fp(2, convert_int_to_fp(thread_get_load_avg()));
-    coeff = divide_fp(coeff, add_fp(coeff, 1));
-    float cpu = multiply_fp(coeff, convert_int_to_fp(thread->recent_cpu));
-    cpu = add_fp(cpu, convert_int_to_fp(thread->niceness));
-    thread->recent_cpu = convert_fp_to_int(cpu);
-    // priority = PRI_MAX - (recent_cpu / 4) - (nice * 2).
-    float priority = subtract_fp(divide_fp(cpu, 4), multiply_int_by_fp(2, thread->niceness));
-    priority = subtract_fp(convert_int_to_fp(PRI_MAX), priority);
-    thread->priority = convert_fp_to_int(priority);
+
+    int int_term = PRI_MAX - (thread->niceness * 2);
+
+    int fp_division = divide_fp_by_int(thread->recent_cpu, 4);
+
+    int fp_priority = add_int_to_fp(int_term, -fp_division);
+
+    int priority = convert_fp_to_int(fp_priority);
+
+    if(priority > PRI_MAX){
+        priority = PRI_MAX;
+    }else if(priority < PRI_MIN){
+        priority = PRI_MIN;
+    }
+
+    thread->priority = priority;
     return thread->priority;
 }
 
@@ -712,10 +730,23 @@ void recalculate_recent_cpu_for_all_mlfqs() {
     {
         struct thread *thread = list_entry (listElem, struct thread, elem);
 
-        //TODO: Recalculate recent_cpu
+        update_recent_cpu(thread);
     }
 
 }
+/* calculate the coefficient of the recent_cpu first to avoid overflow.
+   using the formula:
+   recent_cpu = (2*load_avg)/(2*load_avg + 1) * recent_cpu + nice
+   */
+void update_recent_cpu(struct thread *thread) {
+
+    int fp_twice_load_avg = multiply_int_by_fp(2, load_avg);
+    int fp_twice_ld_avg_plus_one = add_int_to_fp(1, fp_twice_load_avg);
+    int fp_load_avg_fraction = divide_fp(fp_twice_load_avg, fp_twice_ld_avg_plus_one);
+    int first_term = multiply_fp(fp_load_avg_fraction, thread->recent_cpu);
+    thread->recent_cpu = add_int_to_fp(first_term, thread->niceness);
+}
+
 void init_priority_queues_mlfqs() {
     if(!thread_mlfqs) return;
 
@@ -724,3 +755,4 @@ void init_priority_queues_mlfqs() {
         list_init(&priority_queues_mlfqs[i]);
     }
 }
+

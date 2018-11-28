@@ -2,8 +2,6 @@
 // Created by meritv on 11/26/18.
 //
 
-#include <lzma.h>
-
 #ifndef PINTOS_OPERATING_SYSTEM_FIXED_POINT_H
 #define PINTOS_OPERATING_SYSTEM_FIXED_POINT_H
 
@@ -16,49 +14,49 @@
 
 #define F (1 << 14)     /* 17.14 format */
 
-float convert_int_to_fp(int n) {
+int convert_int_to_fp(int n) {
     return n * F;
 }
 
-int convert_fp_to_int(float x) {
+int convert_fp_to_int(int x) {
     return x / F;
 }
 
-int convert_fp_to_int_rounding(float x) {
+int convert_fp_to_int_rounding(int x) {
     if (x >= 0)
         return (x + F / 2) / F;
     else
         return (x - F / 2) / F;
 }
 
-float add_fp(float x, float y) {
+int add_fp(int x, int y) {
     return x + y;
 }
 
-float subtract_fp(float x, float y) {
+int subtract_fp(int x, int y) {
     return x - y;
 }
 
-float add_int_to_fp(int n, float x) {
+int add_int_to_fp(int n, int x) {
     return x + n * F;
 }
 
-float subtract_int_from_fp(int n, float x) {
+int subtract_int_from_fp(int n, int x) {
     return x - n * F;
 }
 
-float multiply_fp(float x, float y) {
+int multiply_fp(int x, int y) {
     return ((int64_t) x) * y / F;
 }
 
-float multiply_int_by_fp(int n, float x) {
+int multiply_int_by_fp(int n, int x) {
     return 	x * n;
 }
 
-float divide_fp(float x, float y) {
+int divide_fp(int x, int y) {
     return ((int64_t) x) * F / y;
 }
 
-float divide_fp_by_int(float x, int n) {
+int divide_fp_by_int(int x, int n) {
     return 	x / n;
 }
