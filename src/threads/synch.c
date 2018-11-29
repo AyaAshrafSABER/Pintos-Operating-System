@@ -296,7 +296,7 @@ cond_wait (struct condition *cond, struct lock *lock)
   ASSERT (lock_held_by_current_thread (lock));
   
   sema_init (&waiter.semaphore, 0);
-  list_push_back (&cond->waiters, &waiter.elem); // Todo :insert in order
+  list_push_back (&cond->waiters, &waiter.elem);
   lock_release (lock);
   sema_down (&waiter.semaphore);
   lock_acquire (lock);
@@ -317,9 +317,15 @@ cond_signal (struct condition *cond, struct lock *lock UNUSED)
   ASSERT (!intr_context ());
   ASSERT (lock_held_by_current_thread (lock));
 
-  if (!list_empty (&cond->waiters)) 
-    sema_up (&list_entry (list_pop_front (&cond->waiters),
-                          struct semaphore_elem, elem)->semaphore);
+  if (!list_empty (&cond->waiters)){
+      //===========================>>><<<===================================//
+
+      /* Signals blocked thread of highest priority in blocked queueu. */
+      struct list_elem * maximum_priority = list_max(&cond->waiters, compare_semaphores_priority, NULL);
+        sema_up(&list_entry(maximum_priority, struct semaphore_elem, elem)->semaphore);
+      list_remove(maximum_priority);
+//===========================>>><<<===================================//
+  }
 }
 
 /* Wakes up all threads, if any, waiting on COND (protected by
@@ -337,3 +343,10 @@ cond_broadcast (struct condition *cond, struct lock *lock)
   while (!list_empty (&cond->waiters))
     cond_signal (cond, lock);
 }
+ //============>><<========//
+/* Compares Threads' priorities using their list_elem as arguments desending order. */
+bool compare_semaphores_priority(const struct list_elem *a, const struct list_elem *b, void *aux UNUSED) {
+    return list_entry(list_front(&list_entry(a, struct semaphore_elem, elem)->semaphore.waiters), struct thread, elem)->priority <
+           list_entry(list_front(&list_entry(b, struct semaphore_elem, elem)->semaphore.waiters), struct thread, elem)->priority;
+}
+//============>><<=======//
