@@ -70,7 +70,6 @@ static void *alloc_frame (struct thread *, size_t size);
 static void schedule (void);
 void thread_schedule_tail (struct thread *prev);
 static tid_t allocate_tid (void);
-
 static int update_priority_mlfqs(struct thread *thread);
 
 static void insert_into_priority_queue_mlfqs(struct thread *thread);
@@ -219,10 +218,8 @@ thread_create (const char *name, int priority,
   sf = alloc_frame (t, sizeof *sf);
   sf->eip = switch_entry;
   sf->ebp = 0;
-
   /* Add to run queue. */
   thread_unblock (t);
-
   return tid;
 }
 
@@ -259,8 +256,15 @@ thread_unblock (struct thread *t)
 
   old_level = intr_disable ();
   ASSERT (t->status == THREAD_BLOCKED);
-  list_push_back (&ready_list, &t->elem);
-  t->status = THREAD_READY;
+    //=========================>><<==================//
+    list_insert_ordered(&ready_list, &t->elem, compare_threads_priority, NULL); // insert in order
+    //=========================>><<==================//
+    t->status = THREAD_READY;
+  //=========================>><<==================//
+    /* Checks for a possible preemption. */
+    if(!intr_context () && thread_current() != idle_thread && thread_current()->priority < t->priority)
+        thread_yield();
+    //==============>><<=================//
   intr_set_level (old_level);
 }
 
@@ -330,8 +334,10 @@ thread_yield (void)
 
   old_level = intr_disable ();
   if (cur != idle_thread)
-    list_push_back (&ready_list, &cur->elem);
-  cur->status = THREAD_READY;
+      //================>><<========================//
+      list_insert_ordered(&ready_list, &cur->elem, compare_threads_priority, NULL); // insert in order
+      //=================>><<===============//
+      cur->status = THREAD_READY;
   schedule ();
   intr_set_level (old_level);
 }
@@ -357,7 +363,22 @@ thread_foreach (thread_action_func *func, void *aux)
 void
 thread_set_priority (int new_priority)
 {
-  thread_current ()->priority = new_priority;
+    //===============>><<=================//
+    if (thread_mlfqs)
+        return;
+  enum intr_level old_level;
+  old_level = intr_disable (); //disabiling interrupt to prevent 2 updates in the same time
+  //===============>><<=================//
+  if (new_priority < thread_current ()->priority) {
+      thread_current()->priority = new_priority;
+      thread_yield();
+  }else {
+      thread_current()->priority = new_priority;
+  }
+  //=============>>enter<<=================//
+  //enabling interrupt
+  intr_set_level (old_level);
+  //===============>><<=================//
 }
 
 /* Returns the current thread's priority. */
@@ -489,7 +510,9 @@ init_thread (struct thread *t, const char *name, int priority)
   if(thread_mlfqs) update_priority_mlfqs(t);
 
   old_level = intr_disable ();
-  list_push_back (&all_list, &t->allelem);
+  //=============>><<===================//
+  list_insert_ordered(&all_list, &t->allelem, compare_threads_priority, NULL); // insert in order
+  //=========>><<==============//
   intr_set_level (old_level);
 }
 
@@ -624,4 +647,8 @@ static void insert_into_priority_queue_mlfqs(struct thread *thread) {
     if(thread_mlfqs){
         //TODO:Implement
     }
+}
+/* Compares threads' priorities, sorting them in ascending order according to their priorities. */
+bool compare_threads_priority(const struct list_elem *a, const struct list_elem *b, void *aux UNUSED) {
+    return list_entry(a, struct thread, elem)->priority > list_entry(b, struct thread, elem)->priority;
 }
