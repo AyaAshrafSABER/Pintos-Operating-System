@@ -12,7 +12,7 @@
    in all copies of this software.
 
    IN NO EVENT SHALL THE UNIVERSITY OF CALIFORNIA BE LIABLE TO
-   ANY PARTY FOR DIRECT, INDIRECT, SPECIAL, INCIDENTAL, OR
+   ANY PARTY FOR DIRECT, INDIRECT, SPECIAL, INCIDENTAL, ORa
    CONSEQUENTIAL DAMAGES ARISING OUT OF THE USE OF THIS SOFTWARE
    AND ITS DOCUMENTATION, EVEN IF THE UNIVERSITY OF CALIFORNIA
    HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
@@ -68,7 +68,9 @@ sema_down (struct semaphore *sema)
   old_level = intr_disable ();
   while (sema->value == 0) 
     {
-      list_push_back (&sema->waiters, &thread_current ()->elem);
+      //=====>><<=====//
+      list_insert_ordered(&sema->waiters,&thread_current ()->elem, compare_threads_priority, NULL); // insert in order
+      //=====>><<====//
       thread_block ();
     }
   sema->value--;
@@ -97,7 +99,6 @@ sema_try_down (struct semaphore *sema)
   else
     success = false;
   intr_set_level (old_level);
-
   return success;
 }
 
@@ -113,10 +114,11 @@ sema_up (struct semaphore *sema)
   ASSERT (sema != NULL);
 
   old_level = intr_disable ();
-  if (!list_empty (&sema->waiters)) 
-    thread_unblock (list_entry (list_pop_front (&sema->waiters),
-                                struct thread, elem));
-  sema->value++;
+    sema->value++;
+    if (!list_empty (&sema->waiters)) {
+      thread_unblock(list_entry (list_pop_front(&sema->waiters),
+                                 struct thread, elem));
+  }
   intr_set_level (old_level);
 }
 
@@ -173,8 +175,7 @@ sema_test_helper (void *sema_)
    onerous, it's a good sign that a semaphore should be used,
    instead of a lock. */
 void
-lock_init (struct lock *lock)
-{
+lock_init (struct lock *lock) {
   ASSERT (lock != NULL);
 
   lock->holder = NULL;
@@ -190,7 +191,7 @@ lock_init (struct lock *lock)
    interrupts disabled, but interrupts will be turned back on if
    we need to sleep. */
 void
-lock_acquire (struct lock *lock)
+lock_acquire (struct lock *lock) //Todo:- check highest priority run first + implment donations
 {
   ASSERT (lock != NULL);
   ASSERT (!intr_context ());
@@ -231,7 +232,7 @@ lock_release (struct lock *lock)
   ASSERT (lock != NULL);
   ASSERT (lock_held_by_current_thread (lock));
 
-  lock->holder = NULL;
+  lock->holder = NULL; // Todo:- check donation
   sema_up (&lock->semaphore);
 }
 
@@ -295,7 +296,7 @@ cond_wait (struct condition *cond, struct lock *lock)
   ASSERT (lock_held_by_current_thread (lock));
   
   sema_init (&waiter.semaphore, 0);
-  list_push_back (&cond->waiters, &waiter.elem);
+  list_push_back (&cond->waiters, &waiter.elem); // Todo :insert in order
   lock_release (lock);
   sema_down (&waiter.semaphore);
   lock_acquire (lock);
