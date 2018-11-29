@@ -337,6 +337,7 @@ add_executable(pintos
         src/threads/thread.c
         src/threads/thread.h
         src/threads/vaddr.h
+        src/threads/fixed-point.h
         src/userprog/exception.c
         src/userprog/exception.h
         src/userprog/gdt.c
