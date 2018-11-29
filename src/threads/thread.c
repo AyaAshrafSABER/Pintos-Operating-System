@@ -191,7 +191,7 @@ thread_create (const char *name, int priority,
   struct switch_entry_frame *ef;
   struct switch_threads_frame *sf;
   tid_t tid;
-
+  enum intr_level old_level;
   ASSERT (function != NULL);
 
   /* Allocate thread. */
@@ -203,7 +203,7 @@ thread_create (const char *name, int priority,
   init_thread (t, name, priority);
   tid = t->tid = allocate_tid ();
 
-
+    old_level = intr_disable ();
   /* Stack frame for kernel_thread(). */
   kf = alloc_frame (t, sizeof *kf);
   kf->eip = NULL;
@@ -218,6 +218,7 @@ thread_create (const char *name, int priority,
   sf = alloc_frame (t, sizeof *sf);
   sf->eip = switch_entry;
   sf->ebp = 0;
+  intr_set_level (old_level);
   /* Add to run queue. */
   thread_unblock (t);
   return tid;
@@ -251,12 +252,11 @@ void
 thread_unblock (struct thread *t)
 {
   enum intr_level old_level;
-
   ASSERT (is_thread (t));
 
-  old_level = intr_disable ();
   ASSERT (t->status == THREAD_BLOCKED);
-    //=========================>><<==================//
+  old_level = intr_disable ();
+  //=========================>><<==================//
     list_insert_ordered(&ready_list, &t->elem, compare_threads_priority, NULL); // insert in order
     //=========================>><<==================//
     t->status = THREAD_READY;
@@ -506,11 +506,14 @@ init_thread (struct thread *t, const char *name, int priority)
   t->magic = THREAD_MAGIC;
   t->recent_cpu = 0;
   t->niceness = 0;
-
+  t->lock_waited_on = NULL; /* Initialize Thread waiting on lock. */
   if(thread_mlfqs) update_priority_mlfqs(t);
-
+  else {
+      t->initial_priority = t->priority;  /*else, set Thread's priority with priority argument. */
+      list_init(&t->held_locks); /* Initialize Thread acquired locks list. */
+  }
   old_level = intr_disable ();
-  //=============>><<===================//
+    //=============>><<===================//
   list_insert_ordered(&all_list, &t->allelem, compare_threads_priority, NULL); // insert in order
   //=========>><<==============//
   intr_set_level (old_level);
@@ -651,4 +654,15 @@ static void insert_into_priority_queue_mlfqs(struct thread *thread) {
 /* Compares threads' priorities, sorting them in ascending order according to their priorities. */
 bool compare_threads_priority(const struct list_elem *a, const struct list_elem *b, void *aux UNUSED) {
     return list_entry(a, struct thread, elem)->priority > list_entry(b, struct thread, elem)->priority;
+}
+/* Implements donation in case of priority schedular. */
+void thread_donate_of_priority(struct thread *t) {
+    struct thread* node = t;
+    int priority = t->priority;
+
+    while(node->lock_waited_on != NULL && node->lock_waited_on->holder != NULL
+          && priority > node->lock_waited_on->holder->priority) {
+        node->lock_waited_on->holder->priority = priority;
+        node = node->lock_waited_on->holder;
+    }
 }

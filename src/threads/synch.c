@@ -192,13 +192,30 @@ lock_init (struct lock *lock) {
    we need to sleep. */
 void
 lock_acquire (struct lock *lock) //Todo:- check highest priority run first + implment donations
-{
+{ enum intr_level old_level;
   ASSERT (lock != NULL);
   ASSERT (!intr_context ());
-  ASSERT (!lock_held_by_current_thread (lock));
+  ASSERT (!lock_held_by_current_thread (lock))
 
-  sema_down (&lock->semaphore);
-  lock->holder = thread_current ();
+//    /* Add LOCK to list of LOCK_WAITED_ON in thread_current. */
+//    thread_current()->lock_waited_on = lock;
+//
+//    /* Check for donation, if priority scheduler is chosen. */
+//    if(!thread_mlfqs && thread_current()->priority > lock->holder->priority){
+//        thread_donate_of_priority(thread_current());
+//    }
+
+    sema_down (&lock->semaphore);
+
+    thread_current()->lock_waited_on = NULL;
+     old_level = intr_disable ();
+     list_push_back (&thread_current()->held_locks, &lock->elem);
+     intr_set_level(old_level);
+    /* Updates holder of the lock to thread_current. */
+    lock->holder = thread_current();
+//    /* Enabling back interrupts. */
+//
+
 }
 
 /* Tries to acquires LOCK and returns true if successful or false
@@ -207,19 +224,6 @@ lock_acquire (struct lock *lock) //Todo:- check highest priority run first + imp
 
    This function will not sleep, so it may be called within an
    interrupt handler. */
-bool
-lock_try_acquire (struct lock *lock)
-{
-  bool success;
-
-  ASSERT (lock != NULL);
-  ASSERT (!lock_held_by_current_thread (lock));
-
-  success = sema_try_down (&lock->semaphore);
-  if (success)
-    lock->holder = thread_current ();
-  return success;
-}
 
 /* Releases LOCK, which must be owned by the current thread.
 
@@ -227,13 +231,34 @@ lock_try_acquire (struct lock *lock)
    make sense to try to release a lock within an interrupt
    handler. */
 void
-lock_release (struct lock *lock) 
-{
+lock_release (struct lock *lock)
+{ enum intr_level old_level;
+//    struct list_elem *e;
+//    struct list_elem *max_list_elem;
+//    int node_priority;
+//
   ASSERT (lock != NULL);
   ASSERT (lock_held_by_current_thread (lock));
-
+//  old_level = intr_disable ();
+//  list_remove (&lock->elem);
+//  if(!thread_mlfqs) {
+//      thread_current()->priority = thread_current()->initial_priority;
+//    /* Assigns thread that released a lock, its old priority or a new donated priority
+//       if its current priority was donated by a higher waiting-on-lock thread. */
+//    for (e = list_begin (&thread_current()->held_locks); e != list_end (&thread_current()->held_locks);
+//         e = list_next (e)) {
+//        max_list_elem = list_max(&list_entry(e, struct lock, elem)->semaphore.waiters, compare_threads_priority, NULL);
+//        node_priority = list_entry(max_list_elem, struct thread, elem)->priority;
+//        if(node_priority >thread_current()->priority) {
+//            thread_current()->priority = node_priority;
+//        }
+//    }
+//  }
+////===========================>>><<<===================================//
   lock->holder = NULL; // Todo:- check donation
   sema_up (&lock->semaphore);
+    /* Enabling back interrupts. */
+    //intr_set_level(old_level);
 }
 
 /* Returns true if the current thread holds LOCK, false
@@ -246,7 +271,20 @@ lock_held_by_current_thread (const struct lock *lock)
 
   return lock->holder == thread_current ();
 }
-
+
+bool
+lock_try_acquire (struct lock *lock)
+{
+    bool success;
+
+    ASSERT (lock != NULL);
+    ASSERT (!lock_held_by_current_thread (lock));
+
+    success = sema_try_down (&lock->semaphore);
+    if (success)
+        lock->holder = thread_current ();
+    return success;
+}
 /* One semaphore in a list. */
 struct semaphore_elem 
   {

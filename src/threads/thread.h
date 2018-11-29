@@ -97,6 +97,9 @@ struct thread
     struct list_elem elem;              /* List element. */
     //==============>><<===============//
     int64_t endTicks; /*time to end thread*/
+    int initial_priority;		/* Thread initial priority initialized on create time.*/
+    struct lock *lock_waited_on;	/* Lock the thread is waiting on. Threads can be locked on only one lock.*/
+    struct list held_locks; /* Locks held by the thread. Threads can acquire as many locks as possible.*/
     //==============>><<===============//
 
 #ifdef USERPROG
