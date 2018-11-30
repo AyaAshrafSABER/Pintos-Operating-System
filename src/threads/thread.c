@@ -185,7 +185,7 @@ thread_print_stats (void)
 tid_t
 thread_create (const char *name, int priority,
                thread_func *function, void *aux)
-{
+{ enum intr_level old_level;
   struct thread *t;
   struct kernel_thread_frame *kf;
   struct switch_entry_frame *ef;
@@ -202,7 +202,9 @@ thread_create (const char *name, int priority,
   /* Initialize thread. */
   init_thread (t, name, priority);
   tid = t->tid = allocate_tid ();
-
+  //==================>><<=========//
+    old_level = intr_disable ();
+    //===========>><<=============//
 
   /* Stack frame for kernel_thread(). */
   kf = alloc_frame (t, sizeof *kf);
@@ -218,8 +220,18 @@ thread_create (const char *name, int priority,
   sf = alloc_frame (t, sizeof *sf);
   sf->eip = switch_entry;
   sf->ebp = 0;
-  /* Add to run queue. */
+  //=================>><<=========================//
+    intr_set_level (old_level);
+    //=================>><<=========================//
+
+    /* Add to run queue. */
   thread_unblock (t);
+            /*preemtion*/
+    old_level = intr_disable ();
+    if(t->priority > thread_current()->priority)
+        thread_yield();
+
+    intr_set_level (old_level);
   return tid;
 }
 
@@ -363,22 +375,48 @@ thread_foreach (thread_action_func *func, void *aux)
 void
 thread_set_priority (int new_priority)
 {
-    //===============>><<=================//
+//    //===============>><<=================//
+//    if (thread_mlfqs)
+//        return;
+//  enum intr_level old_level;
+//  old_level = intr_disable (); //disabiling interrupt to prevent 2 updates in the same time
+//  //===============>><<=================//
+//  if (new_priority < thread_current ()->priority) {
+//      thread_current()->priority = new_priority;
+//      thread_yield();
+//  }else {
+//      thread_current()->priority = new_priority;
+//  }
+//  //=============>>enter<<=================//
+//  //enabling interrupt
+//  intr_set_level (old_level);
+//  //===============>><<=================//
+    enum intr_level old_level;
     if (thread_mlfqs)
-        return;
-  enum intr_level old_level;
-  old_level = intr_disable (); //disabiling interrupt to prevent 2 updates in the same time
-  //===============>><<=================//
-  if (new_priority < thread_current ()->priority) {
-      thread_current()->priority = new_priority;
-      thread_yield();
-  }else {
-      thread_current()->priority = new_priority;
-  }
-  //=============>>enter<<=================//
-  //enabling interrupt
-  intr_set_level (old_level);
-  //===============>><<=================//
+      return;
+    old_level = intr_disable ();
+    if(list_empty(&thread_current()->priority_donors)) //check their is no donation
+    {
+        thread_current()->priority = new_priority;
+        thread_current()->base_priority = new_priority;
+    }
+    else if(new_priority > thread_current()->priority)
+    {
+        thread_current()->priority = new_priority;
+        thread_current()->base_priority = new_priority;
+    }
+    else
+        thread_current()->base_priority = new_priority; // donation
+
+    if(!list_empty(&ready_list))
+    {
+        struct list_elem *front = list_front(&ready_list);
+        struct thread *fthread = list_entry (front, struct thread, elem);
+            /*preemtion*/
+        if(fthread->priority > thread_current ()->priority)
+            thread_yield();
+    }
+    intr_set_level (old_level);
 }
 
 /* Returns the current thread's priority. */
@@ -506,9 +544,13 @@ init_thread (struct thread *t, const char *name, int priority)
   t->magic = THREAD_MAGIC;
   t->recent_cpu = 0;
   t->niceness = 0;
-
+  t->locker = NULL;
+  t->blocked = NULL;
   if(thread_mlfqs) update_priority_mlfqs(t);
-
+  else {
+      t->base_priority = priority;
+  }
+    list_init (&t->priority_donors);
   old_level = intr_disable ();
   //=============>><<===================//
   list_insert_ordered(&all_list, &t->allelem, compare_threads_priority, NULL); // insert in order

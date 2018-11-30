@@ -4,6 +4,7 @@
 #include <debug.h>
 #include <list.h>
 #include <stdint.h>
+#include "synch.h"
 
 /* States in a thread's life cycle. */
 enum thread_status
@@ -97,6 +98,11 @@ struct thread
     struct list_elem elem;              /* List element. */
     //==============>><<===============//
     int64_t endTicks; /*time to end thread*/
+    struct list_elem donor_elem; /*this for donation list*/
+    int base_priority; /*initial priority for thread before donation*/
+    struct thread *locker; /*hold the thread which block the highest priority thread to run*/
+    struct list priority_donors;/*nested priority donation*/
+    struct lock *blocked;
     //==============>><<===============//
 
 #ifdef USERPROG
