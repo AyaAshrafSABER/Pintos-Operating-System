@@ -160,22 +160,18 @@ int thread_get_nice (void);
 void thread_set_nice (int);
 int thread_get_recent_cpu (void);
 int thread_get_load_avg (void);
+void update_recent_cpu_for_all_threads_mlfqs();
 
- void update_recent_cpu_for_all_threads_mlfqs();
+int update_load_avg_mlfqs();
 
- int update_load_avg_mlfqs();
+void update_threads_priorities_for_all_mlfqs();
+void update_recent_cpu(struct thread *thread, void *aux UNUSED);
 
- void update_threads_priorities_for_all_mlfqs();
+int update_thread_priority_mlfqs(struct thread *thread, void *aux UNUSED);
 
- void update_recent_cpu(struct thread *thread);
+void increment_recent_cpu();
 
- int update_thread_priority_mlfqs(struct thread *thread);
+void update_thread_status();
 
- void increment_recent_cpu();
-
- void update_thread_status();
-
-//========================================>><<====================================//
 bool compare_threads_priority(const struct list_elem *a, const struct list_elem *b, void *aux UNUSED);
-//========================================>><<====================================//
 #endif /* threads/thread.h */

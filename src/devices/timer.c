@@ -187,26 +187,7 @@ timer_interrupt (struct intr_frame *args UNUSED)
   ticks++;
   thread_tick ();
 
-    bool preempt = false;
-
-    enum intr_level old_level = intr_disable();
-
-    if (thread_mlfqs)
-    {
-
-        increment_recent_cpu ();
-
-        if (timer_ticks() % TIMER_FREQ == 0){
-
-            update_thread_status();
-        }
-
-        else if (timer_ticks() % 4 == 0)
-        {
-            update_thread_priority_mlfqs (thread_current ());
-        }
-    }
-    intr_set_level(old_level);
+    //bool preempt = false;
 
     while (!list_empty(&busyThreadList)){
 
@@ -216,12 +197,12 @@ timer_interrupt (struct intr_frame *args UNUSED)
         }
         list_remove(list_front(&busyThreadList));
         thread_unblock(head);
-        preempt = true;
+    //    preempt = true;
     }
 
-    if(preempt){
-        intr_yield_on_return ();
-    }
+//    if(preempt){
+//        intr_yield_on_return ();
+//    }
 
 }
 
