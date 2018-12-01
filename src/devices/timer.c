@@ -30,6 +30,9 @@ static void busy_wait (int64_t loops);
 static void real_time_sleep (int64_t num, int32_t denom);
 static void real_time_delay (int64_t num, int32_t denom);
 
+/*data structures remove busy wait from timer sleep*/
+static struct list busyThreadList;
+
 /* Sets up the timer to interrupt TIMER_FREQ times per second,
    and registers the corresponding interrupt. */
 void
@@ -37,6 +40,7 @@ timer_init (void)
 {
   pit_configure_channel (0, 2, TIMER_FREQ);
   intr_register_ext (0x20, timer_interrupt, "8254 Timer");
+  list_init(&busyThreadList);
 }
 
 /* Calibrates loops_per_tick, used to implement brief delays. */
@@ -86,14 +90,24 @@ timer_elapsed (int64_t then)
 
 /* Sleeps for approximately TICKS timer ticks.  Interrupts must
    be turned on. */
+bool threadLessTicks(struct list_elem *a, struct list_elem *b, void * aux){
+  struct thread *first = list_entry(a, struct thread, elem);
+  struct thread *second = list_entry(b, struct thread, elem);
+  return first->endTicks < second->endTicks ;
+}
+
 void
 timer_sleep (int64_t ticks)
 {
-  int64_t start = timer_ticks ();
-
-  ASSERT (intr_get_level () == INTR_ON);
-  while (timer_elapsed (start) < ticks)
-    thread_yield ();
+    enum intr_level old_level;
+    int64_t start = timer_ticks ();
+    ASSERT (intr_get_level () == INTR_ON);
+    old_level = intr_disable();
+    struct thread *current = thread_current();
+    current->endTicks = timer_ticks() + ticks;
+    list_insert_ordered(&busyThreadList, &current->elem, threadLessTicks, NULL);
+    thread_block();
+    intr_set_level(old_level);
 }
 
 /* Sleeps for approximately MS milliseconds.  Interrupts must be
@@ -172,6 +186,43 @@ timer_interrupt (struct intr_frame *args UNUSED)
 {
   ticks++;
   thread_tick ();
+
+    bool preempt = false;
+
+    enum intr_level old_level = intr_disable();
+
+    if (thread_mlfqs)
+    {
+
+        increment_recent_cpu ();
+
+        if (timer_ticks() % TIMER_FREQ == 0){
+
+            update_thread_status();
+        }
+
+        else if (timer_ticks() % 4 == 0)
+        {
+            update_thread_priority_mlfqs (thread_current ());
+        }
+    }
+    intr_set_level(old_level);
+
+    while (!list_empty(&busyThreadList)){
+
+        struct thread *head = list_entry(list_front(&busyThreadList), struct thread, elem);
+        if(head->endTicks > ticks){
+            break;
+        }
+        list_remove(list_front(&busyThreadList));
+        thread_unblock(head);
+        preempt = true;
+    }
+
+    if(preempt){
+        intr_yield_on_return ();
+    }
+
 }
 
 /* Returns true if LOOPS iterations waits for more than one timer
