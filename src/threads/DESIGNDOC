@@ -188,7 +188,22 @@ This design was chosen over other alternatives to implement priority donation. U
 >> C1: Copy here the declaration of each new or changed `struct' or
 >> `struct' member, global or static variable, `typedef', or
 >> enumeration.  Identify the purpose of each in 25 words or less.
+In thread.h
 
+struct thread
+    int niceness;			/* The nice value of the thread */
+    int recent_cpu;			/* The recent cpu value of the thread */
+
+/* Nice boundary */
+#define NICE_MAX 20
+#define NICE_MIN -20
+#define NICE_DEFAULT 0
+
+/* Default values */
+#define RECENT_CPU_DEFAULT 0
+#define LOAD_AVG_DEFAULT 0
+
+static int load_avg;		/* Load average shared between all threads. */
 ---- ALGORITHMS ----
 
 >> C2: Suppose threads A, B, and C have nice values 0, 1, and 2.  Each
@@ -199,23 +214,45 @@ This design was chosen over other alternatives to implement priority donation. U
 timer  recent_cpu    priority   thread
 ticks   A   B   C   A   B   C   to run
 -----  --  --  --  --  --  --   ------
- 0
- 4
- 8
-12
-16
-20
-24
-28
-32
-36
+0       0   1   2   63 61   59   A
+4       4   1   2   62 61   59 	 A
+8       7   2   4   61 61   58   B             
+12 		6   6   6   61 59   58   A
+16 		9   6   7   60 59   57   A
+20 		12  6   8   60 59   57   A
+24 		15  6   9   59 59   57   B
+28 		14  10  10  59 58   57   A
+32 		16  10  11  58 58   56   B
+36 		15  14  12  59 57   56   A
 
 >> C3: Did any ambiguities in the scheduler specification make values
 >> in the table uncertain?  If so, what rule did you use to resolve
 >> them?  Does this match the behavior of your scheduler?
 
+Ambiguities when calculating the recent_cpu, load_avg and priority,
+we don't take into account the ticks consumed while calculating these values.
+
+These are independent from the process ticks as it's not on the cpu but its recent_cpu value gets updated while not on the cpu.
+
+We implemented these calculations after invoking the thread_tick();
+this makes sure the process gets its time before updating these calculations.
+
 >> C4: How is the way you divided the cost of scheduling between code
 >> inside and outside interrupt context likely to affect performance?
+
+Due to the precise nature in which the scheduler variables needed to be
+updated, most of the computation needs to be done within the interrupt
+handler. The only computation done outside the interrupt handler is 
+when resetting the nice value, but the interrupts have to be turned off.
+This is because resetting nice also changes the priority, which is
+read/written in the interrupt handler.
+If the CPU spends too much time on calculations for recent_cpu, load_avg and 
+priority, then it takes away most of the time that a thread before enforced 
+preemption. Then this thread can not get enough running time as expected and it 
+will run longer. This will cause itself got blamed for occupying more CPU time, 
+and raise its load_avg, recent_cpu, and therefore lower its priority. This may 
+disturb the scheduling decisions making. Thus, if the cost of scheduling inside 
+the interrupt context goes up, it will lower performance.
 
 ---- RATIONALE ----
 
@@ -224,12 +261,44 @@ ticks   A   B   C   A   B   C   to run
 >> time to work on this part of the project, how might you choose to
 >> refine or improve your design?
 
+Our design did not apply the 64 queues. We used only the ready_list 
+that Pintos originally have. But we keep the ready_list as an priority 
+oriented descending order whenever we insert a thread into the ready_list, we 
+insert it in order.
+Our implementation of the 4.4BSD Scheduler and updating the priority,
+load_avg and recent_cpu for all threads is explained in the previous question. 
+
+Advantages:
+
+The time complexity is O(n). 
+Every fourth tick, it is required to calculate priority for all the threads
+in the all_list. After this, we need to sort the ready_list,
+which will take O(n lgn) time. Since we need to do this job 
+every 4 ticks, it will make a thread’s running ticks shorter than it is expected.
+
+Disadvantages:
+ 
+If n becomes larger, thread switching may happen quite often. If we use 64 queues 
+for the ready threads, we can put the 64 queues in an array with index equaling to
+its priority value. But this would take much more space.
+When the thread is first inserted, it only need to index the 
+queue by this thread’s priority. This will take only O(1) time.
+After priority calculation for all threads every fourth tick,
+it takes O(n) time to re-insert the ready threads.
+
 >> C6: The assignment explains arithmetic for fixed-point math in
 >> detail, but it leaves it open to you to implement it.  Why did you
 >> decide to implement it the way you did?  If you created an
 >> abstraction layer for fixed-point math, that is, an abstract data
 >> type and/or a set of functions or macros to manipulate fixed-point
 >> numbers, why did you do so?  If not, why not?
+
+As mentioned in the BSD scheduling manual, recent_cpu and load_avg are real 
+numbers, but pintos disabled float numbers. Instead using float number, we can 
+use fixed-point numbers. So we use fixed-point numbers to represent recent_cpu 
+and load_avg.
+
+Used implemented function in a header fixed-point.h beacuse it is more convinient and the header is only included in the thread.c file.
 
 			   SURVEY QUESTIONS
 			   ================
