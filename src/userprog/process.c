@@ -1,21 +1,16 @@
 #include "userprog/process.h"
-#include <debug.h>
 #include <inttypes.h>
 #include <round.h>
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include "userprog/gdt.h"
 #include "userprog/pagedir.h"
 #include "userprog/tss.h"
-#include "filesys/directory.h"
 #include "filesys/file.h"
 #include "filesys/filesys.h"
 #include "threads/flags.h"
-#include "threads/init.h"
 #include "threads/interrupt.h"
 #include "threads/palloc.h"
-#include "threads/thread.h"
 #include "threads/vaddr.h"
 
 static thread_func start_process NO_RETURN;
@@ -88,6 +83,9 @@ start_process (void *file_name_)
 int
 process_wait (tid_t child_tid UNUSED) 
 {
+  //TODO:Implement
+  while (true);
+
   return -1;
 }
 

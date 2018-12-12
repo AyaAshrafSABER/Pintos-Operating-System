@@ -4,6 +4,7 @@
 #include <debug.h>
 #include <list.h>
 #include <stdint.h>
+#include <src/lib/user/syscall.h>
 #include "synch.h"
 
 /* States in a thread's life cycle. */
@@ -117,11 +118,17 @@ struct thread
 #ifdef USERPROG
     /* Owned by userprog/process.c. */
     uint32_t *pagedir;                  /* Page directory. */
+
+    pid_t parent_id;
+    struct list children;
+
 #endif
 
     /* Owned by thread.c. */
     unsigned magic;                     /* Detects stack overflow. */
-  };
+
+
+};
 
 /* If false (default), use round-robin scheduler.
    If true, use multi-level feedback queue scheduler.
