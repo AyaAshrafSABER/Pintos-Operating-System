@@ -113,6 +113,8 @@ void halt(void) {
 }
 
 void exit(int status) {
+    struct thread *thread = thread_current();
+    printf ("%s: exit(%d)\n", thread->name, status);
 //TODO: When exits, use printf ("%s: exit(%d)\n", ...);. The name printed should be the full name passed to
 // process_execute(), omitting command-line arguments.
 }
