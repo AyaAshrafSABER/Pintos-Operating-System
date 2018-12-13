@@ -11,7 +11,13 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0e94c76e-b187-4ec0-bce3-7e2e5cb1a19b" name="Default Changelist" comment="" />
+    <list default="true" id="0e94c76e-b187-4ec0-bce3-7e2e5cb1a19b" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/devices/timer.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/devices/timer.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/threads/synch.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/threads/synch.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/threads/thread.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/threads/thread.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/threads/thread.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/threads/thread.h" afterDir="false" />
+    </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -61,38 +67,187 @@
         </counts>
       </usages-collector>
     </session>
+    <session id="-1525567273">
+      <usages-collector id="statistics.file.extensions.edit">
+        <counts>
+          <entry key="c" value="558" />
+          <entry key="h" value="213" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.edit">
+        <counts>
+          <entry key="ObjectiveC" value="771" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.extensions.open">
+        <counts>
+          <entry key="c" value="4" />
+          <entry key="ck" value="5" />
+          <entry key="h" value="1" />
+        </counts>
+      </usages-collector>
+      <usages-collector id="statistics.file.types.open">
+        <counts>
+          <entry key="ObjectiveC" value="5" />
+          <entry key="PLAIN_TEXT" value="5" />
+        </counts>
+      </usages-collector>
+    </session>
   </component>
   <component name="FileEditorManager">
-    <leaf>
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
+        <entry file="file://$PROJECT_DIR$/src/devices/timer.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="315">
-              <caret line="21" lean-forward="true" selection-start-line="21" selection-end-line="21" />
+            <state relative-caret-position="352">
+              <caret line="201" selection-start-line="201" selection-end-line="201" />
+              <folding>
+                <element signature="e#0#26#0" expanded="true" />
+                <element signature="e#301#344#0" expanded="true" />
+                <element signature="e#374#411#0" expanded="true" />
+                <element signature="e#929#1200#0" />
+                <element signature="e#1202#1975#0" />
+                <element signature="e#1977#2178#0" />
+                <element signature="e#2180#2371#0" />
+                <element signature="e#2461#2703#0" />
+                <element signature="e#2705#3109#0" />
+                <element signature="e#3111#3192#0" />
+                <element signature="e#3111#3257#0" />
+                <element signature="e#3259#3412#0" />
+                <element signature="e#3414#3573#0" />
+                <element signature="e#3575#3954#0" />
+                <element signature="e#3956#4338#0" />
+                <element signature="e#4340#4737#0" />
+                <element signature="e#4739#4858#0" />
+                <element signature="e#5749#6155#0" />
+                <element signature="e#6157#6535#0" />
+                <element signature="e#6537#7240#0" />
+                <element signature="e#7242#7558#0" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/utils/backtrace">
-          <provider selected="true" editor-type-id="text-editor" />
+        <entry file="file://$PROJECT_DIR$/src/threads/thread.c">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1882">
+              <caret line="436" column="26" lean-forward="true" selection-start-line="436" selection-start-column="26" selection-end-line="436" selection-end-column="26" />
+              <folding>
+                <element signature="e#0#27#0" expanded="true" />
+                <element signature="e#2478#3403#0" />
+                <element signature="e#3405#3838#0" />
+                <element signature="e#3821#4693#0" />
+                <element signature="e#4300#4490#0" />
+                <element signature="e#6536#6959#0" />
+                <element signature="e#7860#7975#0" />
+                <element signature="e#7977#8555#0" />
+                <element signature="e#8557#8657#0" />
+                <element signature="e#8659#9164#0" />
+                <element signature="e#9669#10102#0" />
+                <element signature="e#10104#11088#0" />
+                <element signature="e#11090#11207#0" />
+                <element signature="e#11883#11998#0" />
+                <element signature="e#12000#12155#0" />
+                <element signature="e#12157#12348#0" />
+                <element signature="e#12351#13702#0" />
+                <element signature="e#13704#14051#0" />
+                <element signature="e#14054#14472#0" />
+                <element signature="e#14474#14626#0" />
+                <element signature="e#15608#15947#0" />
+                <element signature="e#15949#16415#0" />
+                <element signature="e#16417#17876#0" />
+                <element signature="e#17878#18540#0" />
+                <element signature="e#18543#18758#0" />
+                <element signature="e#18936#19272#0" />
+                <element signature="e#19274#19910#0" />
+                <element signature="e#19912#20547#0" />
+                <element signature="e#20549#20967#0" />
+                <element signature="e#20970#21282#0" />
+                <element signature="e#21284#21731#0" />
+                <element signature="e#21836#22041#0" />
+                <element signature="e#22042#22260#0" />
+              </folding>
+            </state>
+          </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/utils/Makefile">
-          <provider selected="true" editor-type-id="text-editor" />
+        <entry file="file://$PROJECT_DIR$/src/tests/main.c">
+          <provider selected="true" editor-type-id="text-editor">
+            <state>
+              <folding>
+                <element signature="e#0#19#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/utils/pintos">
-          <provider selected="true" editor-type-id="text-editor" />
+        <entry file="file://$PROJECT_DIR$/src/tests/threads/mlfqs-nice-2.ck">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="105">
+              <caret line="7" lean-forward="true" selection-start-line="7" selection-end-line="7" />
+            </state>
+          </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/utils/pintos-gdb">
+        <entry file="file://$PROJECT_DIR$/src/tests/threads/mlfqs-fair.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="285">
-              <caret line="19" column="2" lean-forward="true" selection-start-line="19" selection-start-column="2" selection-end-line="19" selection-end-column="2" />
+            <state relative-caret-position="-188">
+              <caret line="65" selection-start-line="65" selection-end-line="65" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/tests/threads/mlfqs-fair-2.ck">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/tests/threads/mlfqs-nice-10.ck">
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/tests/threads/mlfqs-load-avg.ck">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-85" />
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/threads/synch.c">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="112">
+              <caret line="397" column="62" selection-start-line="397" selection-start-column="62" selection-end-line="397" selection-end-column="62" />
+              <folding>
+                <element signature="e#1463#1908#0" />
+                <element signature="e#1910#2622#0" />
+                <element signature="e#2845#3148#0" />
+                <element signature="e#3150#3791#0" />
+                <element signature="e#3838#4327#0" />
+                <element signature="e#4329#4562#0" />
+                <element signature="e#4565#5487#0" />
+                <element signature="e#5489#6761#0" />
+                <element signature="e#6998#7247#0" />
+                <element signature="e#7249#9079#0" />
+                <element signature="e#9236#9365#0" />
+                <element signature="e#9399#9551#1" />
+                <element signature="e#9554#9831#0" />
+                <element signature="e#9833#11159#0" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/threads/thread.h">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="322">
+              <caret line="170" selection-start-line="170" selection-end-line="170" />
             </state>
           </provider>
         </entry>
@@ -138,6 +293,10 @@
       <list>
         <option value="$PROJECT_DIR$/src/utils/Pintos.pm" />
         <option value="$PROJECT_DIR$/src/utils/pintos-gdb" />
+        <option value="$PROJECT_DIR$/src/threads/synch.c" />
+        <option value="$PROJECT_DIR$/src/devices/timer.c" />
+        <option value="$PROJECT_DIR$/src/threads/thread.h" />
+        <option value="$PROJECT_DIR$/src/threads/thread.c" />
       </list>
     </option>
   </component>
@@ -147,7 +306,8 @@
     <detection-done>true</detection-done>
     <sorting>DEFINITION_ORDER</sorting>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="OCFindUsagesOptions" text="true" ivars="false" properties="true" derivedClasses="false" />
+  <component name="ProjectFrameBounds" extendedState="7">
     <option name="x" value="75" />
     <option name="y" value="16" />
     <option name="width" value="1281" />
@@ -163,18 +323,31 @@
           <expand>
             <path>
               <item name="pintos" type="b2602c69:ProjectViewProjectNode" />
-              <item name="pintos" type="462c0819:PsiDirectoryNode" />
+              <item name="Pintos-Operating-System" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="pintos" type="b2602c69:ProjectViewProjectNode" />
-              <item name="pintos" type="462c0819:PsiDirectoryNode" />
+              <item name="Pintos-Operating-System" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="pintos" type="b2602c69:ProjectViewProjectNode" />
-              <item name="pintos" type="462c0819:PsiDirectoryNode" />
+              <item name="Pintos-Operating-System" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="utils" type="462c0819:PsiDirectoryNode" />
+              <item name="devices" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="pintos" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Pintos-Operating-System" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="tests" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="pintos" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Pintos-Operating-System" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="tests" type="462c0819:PsiDirectoryNode" />
+              <item name="threads" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -241,19 +414,18 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="5027000" />
+    <option name="totallyTimeSpent" value="13161000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="25" width="1366" height="743" extended-state="6" />
+    <frame x="960" y="27" width="960" height="1004" extended-state="4" />
     <editor active="true" />
     <layout>
       <window_info id="Favorites" order="0" side_tool="true" />
-      <window_info active="true" content_ui="combo" id="Project" order="1" visible="true" weight="0.25" />
+      <window_info active="true" content_ui="combo" id="Project" order="1" visible="true" weight="0.24835165" />
       <window_info id="Structure" order="2" side_tool="true" weight="0.25" />
-      <window_info anchor="bottom" id="Messages" sideWeight="0.49924242" weight="0.32952693" />
       <window_info anchor="bottom" id="Terminal" order="0" />
-      <window_info anchor="bottom" id="Event Log" order="1" sideWeight="0.50151515" side_tool="true" visible="true" weight="0.32952693" />
-      <window_info anchor="bottom" id="Version Control" order="2" sideWeight="0.49848485" visible="true" weight="0.32952693" />
+      <window_info anchor="bottom" id="Event Log" order="1" sideWeight="0.5021978" side_tool="true" visible="true" weight="0.330617" />
+      <window_info anchor="bottom" id="Version Control" order="2" sideWeight="0.4978022" visible="true" weight="0.330617" />
       <window_info anchor="bottom" id="CMake" order="3" />
       <window_info anchor="bottom" id="Message" order="4" />
       <window_info anchor="bottom" id="Find" order="5" />
@@ -263,11 +435,34 @@
       <window_info anchor="bottom" id="Cvs" order="9" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="10" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="11" />
+      <window_info anchor="bottom" id="Messages" order="12" sideWeight="0.49924242" weight="0.32952693" />
       <window_info anchor="right" id="Database" order="0" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="1" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="2" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="3" weight="0.25" />
     </layout>
+    <layout-to-restore>
+      <window_info id="Favorites" order="0" side_tool="true" />
+      <window_info active="true" content_ui="combo" id="Project" order="1" visible="true" weight="0.25378788" />
+      <window_info id="Structure" order="2" side_tool="true" weight="0.25" />
+      <window_info anchor="bottom" id="Terminal" order="0" />
+      <window_info anchor="bottom" id="Event Log" order="1" sideWeight="0.50151515" side_tool="true" weight="0.32952693" />
+      <window_info anchor="bottom" id="Version Control" order="2" sideWeight="0.49848485" weight="0.32952693" />
+      <window_info anchor="bottom" id="CMake" order="3" />
+      <window_info anchor="bottom" id="Message" order="4" />
+      <window_info anchor="bottom" id="Find" order="5" weight="0.32952693" />
+      <window_info anchor="bottom" id="Database Changes" order="6" show_stripe_button="false" />
+      <window_info anchor="bottom" id="Run" order="7" />
+      <window_info anchor="bottom" id="Debug" order="8" weight="0.4" />
+      <window_info anchor="bottom" id="Cvs" order="9" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="10" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="11" />
+      <window_info anchor="bottom" id="Messages" order="12" sideWeight="0.49848485" weight="0.32952693" />
+      <window_info anchor="right" id="Database" order="0" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="1" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="2" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="3" weight="0.25" />
+    </layout-to-restore>
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
@@ -290,7 +485,7 @@
     <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="315">
-          <caret line="21" lean-forward="true" selection-start-line="21" selection-end-line="21" />
+          <caret line="21" selection-start-line="21" selection-end-line="21" />
         </state>
       </provider>
     </entry>
@@ -306,7 +501,146 @@
     <entry file="file://$PROJECT_DIR$/src/utils/pintos-gdb">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="285">
-          <caret line="19" column="2" lean-forward="true" selection-start-line="19" selection-start-column="2" selection-end-line="19" selection-end-column="2" />
+          <caret line="19" column="2" selection-start-line="19" selection-start-column="2" selection-end-line="19" selection-end-column="2" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/threads/synch.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="112">
+          <caret line="397" column="62" selection-start-line="397" selection-start-column="62" selection-end-line="397" selection-end-column="62" />
+          <folding>
+            <element signature="e#1463#1908#0" />
+            <element signature="e#1910#2622#0" />
+            <element signature="e#2845#3148#0" />
+            <element signature="e#3150#3791#0" />
+            <element signature="e#3838#4327#0" />
+            <element signature="e#4329#4562#0" />
+            <element signature="e#4565#5487#0" />
+            <element signature="e#5489#6761#0" />
+            <element signature="e#6998#7247#0" />
+            <element signature="e#7249#9079#0" />
+            <element signature="e#9236#9365#0" />
+            <element signature="e#9399#9551#1" />
+            <element signature="e#9554#9831#0" />
+            <element signature="e#9833#11159#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/devices/timer.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="352">
+          <caret line="201" selection-start-line="201" selection-end-line="201" />
+          <folding>
+            <element signature="e#0#26#0" expanded="true" />
+            <element signature="e#301#344#0" expanded="true" />
+            <element signature="e#374#411#0" expanded="true" />
+            <element signature="e#929#1200#0" />
+            <element signature="e#1202#1975#0" />
+            <element signature="e#1977#2178#0" />
+            <element signature="e#2180#2371#0" />
+            <element signature="e#2461#2703#0" />
+            <element signature="e#2705#3109#0" />
+            <element signature="e#3111#3192#0" />
+            <element signature="e#3111#3257#0" />
+            <element signature="e#3259#3412#0" />
+            <element signature="e#3414#3573#0" />
+            <element signature="e#3575#3954#0" />
+            <element signature="e#3956#4338#0" />
+            <element signature="e#4340#4737#0" />
+            <element signature="e#4739#4858#0" />
+            <element signature="e#5749#6155#0" />
+            <element signature="e#6157#6535#0" />
+            <element signature="e#6537#7240#0" />
+            <element signature="e#7242#7558#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/threads/thread.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="322">
+          <caret line="170" selection-start-line="170" selection-end-line="170" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/threads/thread.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1882">
+          <caret line="436" column="26" lean-forward="true" selection-start-line="436" selection-start-column="26" selection-end-line="436" selection-end-column="26" />
+          <folding>
+            <element signature="e#0#27#0" expanded="true" />
+            <element signature="e#2478#3403#0" />
+            <element signature="e#3405#3838#0" />
+            <element signature="e#3821#4693#0" />
+            <element signature="e#4300#4490#0" />
+            <element signature="e#6536#6959#0" />
+            <element signature="e#7860#7975#0" />
+            <element signature="e#7977#8555#0" />
+            <element signature="e#8557#8657#0" />
+            <element signature="e#8659#9164#0" />
+            <element signature="e#9669#10102#0" />
+            <element signature="e#10104#11088#0" />
+            <element signature="e#11090#11207#0" />
+            <element signature="e#11883#11998#0" />
+            <element signature="e#12000#12155#0" />
+            <element signature="e#12157#12348#0" />
+            <element signature="e#12351#13702#0" />
+            <element signature="e#13704#14051#0" />
+            <element signature="e#14054#14472#0" />
+            <element signature="e#14474#14626#0" />
+            <element signature="e#15608#15947#0" />
+            <element signature="e#15949#16415#0" />
+            <element signature="e#16417#17876#0" />
+            <element signature="e#17878#18540#0" />
+            <element signature="e#18543#18758#0" />
+            <element signature="e#18936#19272#0" />
+            <element signature="e#19274#19910#0" />
+            <element signature="e#19912#20547#0" />
+            <element signature="e#20549#20967#0" />
+            <element signature="e#20970#21282#0" />
+            <element signature="e#21284#21731#0" />
+            <element signature="e#21836#22041#0" />
+            <element signature="e#22042#22260#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/tests/threads/mlfqs-load-avg.ck">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-85" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/tests/threads/mlfqs-nice-10.ck">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/tests/main.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <folding>
+            <element signature="e#0#19#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/tests/threads/mlfqs-fair-20.ck">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/tests/threads/mlfqs-fair-2.ck">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/tests/threads/mlfqs-nice-2.ck">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="7" lean-forward="true" selection-start-line="7" selection-end-line="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/tests/threads/mlfqs-fair.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-188">
+          <caret line="65" selection-start-line="65" selection-end-line="65" />
         </state>
       </provider>
     </entry>
