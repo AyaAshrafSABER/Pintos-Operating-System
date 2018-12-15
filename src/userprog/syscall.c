@@ -7,6 +7,7 @@
 #include <src/filesys/filesys.h>
 #include <src/threads/malloc.h>
 #include <src/filesys/file.h>
+#include <src/devices/input.h>
 #include "threads/interrupt.h"
 #include "pagedir.h"
 #include "process.h"
@@ -113,14 +114,37 @@ void halt(void) {
 }
 
 void exit(int status) {
-    struct thread *thread = thread_current();
-    printf ("%s: exit(%d)\n", thread->name, status);
-//TODO: When exits, use printf ("%s: exit(%d)\n", ...);. The name printed should be the full name passed to
-// process_execute(), omitting command-line arguments.
+
+    struct thread *current_thread = thread_current();
+    struct thread *parent_thread = thread_get_by_id(current_thread->parent_id);
+
+    printf("%s: exit(%d)\n", current_thread->name, status);
+
+    if (parent_thread != NULL) {
+
+        lock_acquire(&parent_thread->lock_child);
+
+        struct list_elem *e = list_tail(&parent_thread->children_status);
+        while ((e = list_prev(e)) != list_head(&parent_thread->children_status)) {
+            struct child_status *child_status = list_entry (e, struct child_status, list_elem);
+            if (child_status->child_pid == current_thread->tid) {
+                child_status->is_exit_called = true;
+                child_status->exit_status = status;
+            }
+        }
+
+        if (parent_thread->child_load_status == LOAD_STATUS_LOADING)
+            parent_thread->child_load_status = LOAD_STATUS_FAIL;
+
+        cond_signal(&parent_thread->cond_child, &parent_thread->lock_child);
+
+        lock_release(&parent_thread->lock_child);
+    }
+
+    thread_exit();
 }
 
 pid_t exec(const char *cmd_line) {
-
 
     /* check if the user pinter is valid */
     if (!is_valid_ptr(cmd_line)) {
@@ -128,7 +152,21 @@ pid_t exec(const char *cmd_line) {
         NOT_REACHED();
     }
 
-    return 0;
+    struct thread *cur = thread_current();
+    cur->child_load_status = LOAD_STATUS_LOADING;
+
+    pid_t tid = process_execute(cmd_line);
+    lock_acquire(&cur->lock_child);
+
+    while (cur->child_load_status == LOAD_STATUS_LOADING)
+        cond_wait(&cur->cond_child, &cur->lock_child);
+
+    if (cur->child_load_status == LOAD_STATUS_FAIL)
+        tid = TID_ERROR;
+
+    lock_release(&cur->lock_child);
+
+    return tid;
 }
 
 int wait(pid_t pid) {
@@ -199,7 +237,6 @@ int open(const char *file_name) {
 
 int filesize(int fd) {
 
-
     int size = -1;
 
     lock_acquire(&file_system_lock);
@@ -216,24 +253,86 @@ int filesize(int fd) {
 }
 
 int read(int fd, void *buffer, unsigned length) {
-    if (!is_valid_ptr(buffer)) {
+    if (!is_valid_ptr(buffer) || !is_valid_ptr(buffer + length - 1)) {
         exit(-1);
         NOT_REACHED();
     }
 
+    int bytes_read = 0;
 
-    return 0;
+    lock_acquire(&file_system_lock);
+
+    if (fd == STDOUT_FILENO) {
+
+        bytes_read = -1;
+
+    } else if (fd == STDIN_FILENO) {
+
+        //TODO: if it's allowed to move past the allowed file size
+
+        unsigned int counter = length;
+        uint8_t character;
+        uint8_t *temp_buffer = buffer;
+
+        while (counter > 1 && (character = input_getc()) != 0) {
+            *temp_buffer = character;
+            buffer++;
+            counter--;
+        }
+
+        *temp_buffer = 0;
+
+        bytes_read = length - counter;
+
+    } else {
+        struct file_descriptor *file_descriptor = get_opened_file(fd);
+
+        if (file_descriptor->file == NULL) {
+            //TODO:Check if it requires to return -1
+            bytes_read = 0;
+        } else {
+            bytes_read = file_read(file_descriptor->file, buffer, length);
+        }
+    }
+
+    lock_release(&file_system_lock);
+
+    return bytes_read;
 }
 
 int write(int fd, const void *buffer, unsigned length) {
 
-    if (!is_valid_ptr(buffer)) {
+    if (!is_valid_ptr(buffer) || !is_valid_ptr(buffer + length - 1)) {
         exit(-1);
         NOT_REACHED();
     }
 
+    int bytes_wrote = 0;
 
-    return 0;
+
+    lock_acquire(&file_system_lock);
+
+    if (fd == STDIN_FILENO) {
+        //TODO:Check if it requires 0
+        bytes_wrote = -1;
+    } else if (fd == STDOUT_FILENO) {
+        //TODO:Check
+        putbuf(buffer, length);
+        bytes_wrote = length;
+    } else {
+        struct file_descriptor *file_descriptor = get_opened_file(fd);
+
+        if (file_descriptor->file == NULL) {
+            //TODO:Check if it requires to return -1
+            bytes_wrote = 0;
+        } else {
+            bytes_wrote = file_write(file_descriptor->file, buffer, length);
+        }
+    }
+
+    lock_release(&file_system_lock);
+
+    return bytes_wrote;
 }
 
 void seek(int fd, unsigned position) {
@@ -282,12 +381,6 @@ void close(int fd) {
     lock_release(&file_system_lock);
 }
 
-
-static bool
-is_valid_uvaddr(const void *uvaddr) {
-    return (uvaddr != NULL && is_user_vaddr(uvaddr));
-}
-
 bool is_valid_ptr(const void *usr_ptr) {
     struct thread *cur = thread_current();
     if (is_valid_uvaddr(usr_ptr)) {
@@ -295,6 +388,13 @@ bool is_valid_ptr(const void *usr_ptr) {
     }
     return false;
 }
+
+
+static bool
+is_valid_uvaddr(const void *uvaddr) {
+    return (uvaddr != NULL && is_user_vaddr(uvaddr));
+}
+
 
 struct file_descriptor *get_opened_file(int fd) {
     struct list_elem *e;

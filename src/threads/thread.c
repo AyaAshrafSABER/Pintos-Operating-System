@@ -1,16 +1,10 @@
 #include "threads/thread.h"
-#include <debug.h>
-#include <stddef.h>
-#include <random.h>
 #include <stdio.h>
 #include <string.h>
 #include <devices/timer.h>
-#include "threads/flags.h"
 #include "threads/interrupt.h"
-#include "threads/intr-stubs.h"
 #include "threads/palloc.h"
 #include "threads/switch.h"
-#include "threads/synch.h"
 #include "threads/vaddr.h"
 #include "fixed-point.h"
 
@@ -208,7 +202,6 @@ thread_create (const char *name, int priority,
   tid = t->tid = allocate_tid ();
 
   old_level = intr_disable ();
-
 
   /* Stack frame for kernel_thread(). */
   kf = alloc_frame (t, sizeof *kf);
@@ -591,6 +584,13 @@ init_thread (struct thread *t, const char *name, int priority)
   t->locker = NULL;
   t->blocked = NULL;
 
+    //SysCalls
+    t->parent_id = thread_current()->tid;
+    t->child_load_status = LOAD_STATUS_LOADING;
+    list_init(&t->children_statuses);
+    cond_init(&t->cond_child);
+    lock_init(&t->lock_child);
+
   if(thread_mlfqs){
 
     if(t!=initial_thread){
@@ -605,11 +605,9 @@ init_thread (struct thread *t, const char *name, int priority)
   }
 
   list_init (&t->priority_donors);
-  //old_level = intr_disable ();
 
   list_push_back(&all_list, &t->allelem);
 
-  //intr_set_level (old_level);
 }
 
 /* Allocates a SIZE-byte frame at the top of thread T's stack and
@@ -730,14 +728,6 @@ uint32_t thread_stack_ofs = offsetof (struct thread, stack);
 
 void update_threads_priorities_for_all_mlfqs() {
     thread_foreach(update_thread_priority_mlfqs, NULL);
-//  struct list_elem *listElem;
-//
-//  for (listElem = list_begin (&all_list); listElem != list_end (&all_list);
-//       listElem = list_next (listElem))
-//  {
-//    int priority = update_thread_priority_mlfqs(list_entry (listElem, struct thread, allelem));
-//
-//  }
 }
 
 // priority = PRI_MAX - (recent_cpu / 4) - (nice * 2).
@@ -750,16 +740,6 @@ void update_threads_priorities_for_all_mlfqs() {
   int fp_division = divide_fp_by_int(thread->recent_cpu, 4);
   int priority = PRI_MAX - convert_fp_to_int_rounding(fp_division
           - thread->niceness * 2);
-//
-//  int fp_priority = add_int_to_fp(int_term, multiply_int_by_fp(-1, fp_division));
-//
-//  int priority = convert_fp_to_int(fp_priority);
-//
-//  if(priority > PRI_MAX){
-//    priority = PRI_MAX;
-//  }else if(priority < PRI_MIN){
-//    priority = PRI_MIN;
-//  }
 
   thread->priority = priority;
   return priority;
@@ -802,15 +782,6 @@ int update_load_avg_mlfqs() {
 void update_recent_cpu_for_all_threads_mlfqs() {
 
     thread_foreach(update_recent_cpu, NULL);
-//  struct list_elem *listElem;
-//
-//  for (listElem = list_begin (&all_list); listElem != list_end (&all_list);
-//       listElem = list_next (listElem))
-//  {
-//    struct thread *thread = list_entry (listElem, struct thread, allelem);
-//
-//    update_recent_cpu(thread, NULL);
-//  }
 }
 
 //recent_cpu = (2*load_avg)/(2*load_avg + 1) * recent_cpu + nice
@@ -830,4 +801,17 @@ bool compare_threads_priority(const struct list_elem *a, const struct list_elem 
 }
 void increment_recent_cpu(){
     thread_current()->recent_cpu = add_int_to_fp(1, thread_current()->recent_cpu);
+}/* Get the thread by its tid */
+
+static struct thread *thread_get_by_id(tid_t id) {
+    ASSERT (id != TID_ERROR);
+    struct list_elem *e;
+    struct thread *t;
+    e = list_tail(&all_list);
+    while ((e = list_prev(e)) != list_head(&all_list)) {
+        t = list_entry (e, struct thread, allelem);
+        if (t->tid == id && t->status != THREAD_DYING)
+            return t;
+    }
+    return NULL;
 }
