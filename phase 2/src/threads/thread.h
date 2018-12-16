@@ -4,7 +4,7 @@
 #include <debug.h>
 #include <list.h>
 #include <stdint.h>
-#include <lib/user/syscall.h>
+#include "lib/user/syscall.h"
 #include "synch.h"
 
 /* States in a thread's life cycle. */
@@ -125,36 +125,36 @@ struct thread
    Controlled by kernel command-line option "-o mlfqs". */
 extern bool thread_mlfqs;
 
-static void thread_init (void);
-static void thread_start (void);
+void thread_init (void);
+void thread_start (void);
 
-static void thread_tick (void);
-static void thread_print_stats (void);
+void thread_tick (void);
+void thread_print_stats (void);
 
 typedef void thread_func (void *aux);
-static tid_t thread_create (const char *name, int priority, thread_func *, void *);
+tid_t thread_create (const char *name, int priority, thread_func *, void *);
 
-static void thread_block (void);
-static void thread_unblock (struct thread *);
+void thread_block (void);
+void thread_unblock (struct thread *);
 
-static struct thread *thread_current (void);
-static tid_t thread_tid (void);
-static const char *thread_name (void);
+struct thread *thread_current (void);
+tid_t thread_tid (void);
+const char *thread_name (void);
 
-static void thread_exit (void) NO_RETURN;
-static void thread_yield (void);
+void thread_exit (void) NO_RETURN;
+void thread_yield (void);
 
 /* Performs some operation on thread t, given auxiliary data AUX. */
 typedef void thread_action_func (struct thread *t, void *aux);
-static void thread_foreach (thread_action_func *, void *);
+void thread_foreach (thread_action_func *, void *);
 
-static int thread_get_priority (void);
-static void thread_set_priority (int);
+int thread_get_priority (void);
+void thread_set_priority (int);
 
-static int thread_get_nice (void);
-static void thread_set_nice (int);
-static int thread_get_recent_cpu (void);
-static int thread_get_load_avg (void);
+int thread_get_nice (void);
+void thread_set_nice (int);
+int thread_get_recent_cpu (void);
+int thread_get_load_avg (void);
 
-static struct thread *thread_get_by_id(tid_t id);
+struct thread *thread_get_by_id(tid_t id);
 #endif /* threads/thread.h */
