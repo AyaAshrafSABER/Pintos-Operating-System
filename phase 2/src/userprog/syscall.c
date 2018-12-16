@@ -1,7 +1,7 @@
 #include "userprog/syscall.h"
 #include <stdio.h>
 #include <lib/syscall-nr.h>
-#include <threads/thread.h>
+#include "threads/thread.h"
 #include <threads/vaddr.h>
 #include <devices/shutdown.h>
 #include <filesys/filesys.h>
