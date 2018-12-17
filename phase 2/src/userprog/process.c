@@ -187,6 +187,7 @@ process_exit(void) {
         pagedir_activate(NULL);
         pagedir_destroy(pd);
     }
+    file_deny_write(cur->executable_file);
 }
 /* Sets up the CPU for running user code in the current
    thread.
@@ -383,6 +384,12 @@ load (const char *file_name, void (**eip) (void), void **esp)
     success = true;
 
     done:
+
+    if(success) {
+        file_deny_write (file);
+        t->executable_file = file;
+    }
+    
     /* We arrive here whether the load is successful or not. */
     file_close (file);
     struct thread *parent = thread_get_by_id(t->parent_id);

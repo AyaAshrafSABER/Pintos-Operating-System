@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <threads/malloc.h>
+#include <tclDecls.h>
 #include "userprog/gdt.h"
 #include "userprog/pagedir.h"
 #include "userprog/tss.h"
@@ -130,6 +131,7 @@ process_exit (void)
     pagedir_activate (NULL);
     pagedir_destroy (pd);
   }
+
 }
 
 /* Sets up the CPU for running user code in the current
@@ -328,6 +330,7 @@ load (const char *file_name, void (**eip) (void), void **esp)
 
     done:
   /* We arrive here whether the load is successful or not. */
+
   file_close (file);
   return success;
 }
