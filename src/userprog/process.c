@@ -4,7 +4,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <threads/malloc.h>
-#include <tclDecls.h>
 #include "userprog/gdt.h"
 #include "userprog/pagedir.h"
 #include "userprog/tss.h"
@@ -120,7 +119,6 @@ process_exit (void)
     pd = cur->pagedir;
     if (pd != NULL)
     {
-        file_allow_write(cur->executable_file);
         /* Correct ordering here is crucial.  We must set
            cur->pagedir to NULL before switching page directories,
            so that a timer interrupt can't switch back to the
@@ -332,10 +330,6 @@ load (const char *file_name, void (**eip) (void), void **esp)
     done:
     /* We arrive here whether the load is successful or not. */
 
-    if (success) {
-        file_deny_write(file);
-        t->executable_file = file;
-    }
     file_close (file);
     return success;
 }
