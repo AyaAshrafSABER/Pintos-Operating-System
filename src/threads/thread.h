@@ -4,7 +4,6 @@
 #include <debug.h>
 #include <list.h>
 #include <stdint.h>
-#include "synch.h"
 
 /* States in a thread's life cycle. */
 enum thread_status
@@ -24,15 +23,6 @@ typedef int tid_t;
 #define PRI_MIN 0                       /* Lowest priority. */
 #define PRI_DEFAULT 31                  /* Default priority. */
 #define PRI_MAX 63                      /* Highest priority. */
-
-
-#define NICE_MAX 20
-#define NICE_MIN -20
-#define NICE_DEFAULT 0
-
-#define RECENT_CPU_DEFAULT 0
-
-#define LOAD_AVG_DEFAULT 0
 
 /* A kernel thread or user process.
 
@@ -100,19 +90,8 @@ struct thread
     int priority;                       /* Priority. */
     struct list_elem allelem;           /* List element for all threads list. */
 
-    int niceness;
-    int recent_cpu;
-
     /* Shared between thread.c and synch.c. */
     struct list_elem elem;              /* List element. */
-    //==============>><<===============//
-    int64_t endTicks; /*time to end thread*/
-    struct list_elem donor_elem; /*this for donation list*/
-    int base_priority; /*initial priority for thread before donation*/
-    struct thread *locker; /*hold the thread which block the highest priority thread to run*/
-    struct list priority_donors;/*nested priority donation*/
-    struct lock *blocked;
-    //==============>><<===============//
 
 #ifdef USERPROG
     /* Owned by userprog/process.c. */
@@ -127,8 +106,6 @@ struct thread
    If true, use multi-level feedback queue scheduler.
    Controlled by kernel command-line option "-o mlfqs". */
 extern bool thread_mlfqs;
-
-static int load_avg;
 
 void thread_init (void);
 void thread_start (void);
@@ -160,18 +137,5 @@ int thread_get_nice (void);
 void thread_set_nice (int);
 int thread_get_recent_cpu (void);
 int thread_get_load_avg (void);
-void update_recent_cpu_for_all_threads_mlfqs();
 
-int update_load_avg_mlfqs();
-
-void update_threads_priorities_for_all_mlfqs();
-void update_recent_cpu(struct thread *thread, void *aux UNUSED);
-
-int update_thread_priority_mlfqs(struct thread *thread, void *aux UNUSED);
-
-void increment_recent_cpu();
-
-void update_thread_status();
-
-bool compare_threads_priority(const struct list_elem *a, const struct list_elem *b, void *aux UNUSED);
 #endif /* threads/thread.h */
