@@ -186,9 +186,13 @@ process_exit (void)
         e = next;
     }
 
+    lock_acquire(&file_system_lock);
     /* re-enable the file's writable property*/
-    if (cur->exec_file != NULL)
+    if (cur->exec_file != NULL) {
         file_allow_write (cur->exec_file);
+    }
+
+    lock_release(&file_system_lock);
 
     /* free files whose owner is the current thread*/
     close_file_by_owner (cur->tid);
@@ -314,8 +318,24 @@ load(const char *file_name, void (**eip)(void), void **esp) {
         goto done;
     process_activate();
 
+    /* Pintos will try to load the executable (a file) with
+    filesys_open(file_name). This filename should not be the
+    raw filename but instead just the executable name.*/
+    char *save_ptr ;
+    char *fn_copy = malloc(strlen(file_name) + 1);
+
+    strlcpy (fn_copy, file_name, strlen(file_name) + 1);
+    fn_copy = strtok_r (fn_copy, " ", &save_ptr);
+
     /* Open executable file. */
-    file = filesys_open(file_name);
+    lock_acquire(&file_system_lock);
+    /* Open executable file. */
+    file = filesys_open (fn_copy);
+
+    free(fn_copy);
+
+
+
     if (file == NULL)
     {
         printf("load: %s: open failed\n", file_name);
@@ -404,7 +424,7 @@ load(const char *file_name, void (**eip)(void), void **esp) {
 
     done:
     /* We arrive here whether the load is successful or not. */
-
+    lock_release(&file_system_lock);
     return success;
 }
 

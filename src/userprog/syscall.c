@@ -260,6 +260,8 @@ static int sys_open(const char *file_name) {
 }
 
 static int sys_filesize(int fd) {
+
+
     int size = -1;
 
     lock_acquire(&file_system_lock);
@@ -276,7 +278,7 @@ static int sys_filesize(int fd) {
 }
 
 static int sys_read(int fd, void *buffer, unsigned length) {
-    if (!is_valid_ptr(buffer) || !is_valid_ptr(buffer + length - 1)) {
+    if (!is_valid_ptr(buffer) || !is_valid_ptr(buffer + length - 1) || fd < 0) {
         sys_exit(-1);
         NOT_REACHED();
     }
@@ -326,7 +328,7 @@ static int sys_read(int fd, void *buffer, unsigned length) {
 static int sys_write(int fd, const void *buffer, unsigned length) {
 
 
-    if (!is_valid_ptr(buffer) || !is_valid_ptr(buffer + length - 1)) {
+    if (!is_valid_ptr(buffer) || !is_valid_ptr(buffer + length - 1) || fd < 0) {
         sys_exit(-1);
         NOT_REACHED();
     }
