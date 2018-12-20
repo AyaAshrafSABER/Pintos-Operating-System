@@ -15,4 +15,6 @@ bool is_valid_ptr(const void *);
 
 void close_file_by_owner(tid_t);
 
+static void sys_exit(int status);
+
 #endif /* userprog/syscall.h */

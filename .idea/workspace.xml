@@ -13,14 +13,8 @@
   <component name="ChangeListManager">
     <list default="true" id="0e94c76e-b187-4ec0-bce3-7e2e5cb1a19b" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/threads/DESIGNDOC" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/threads/GRADE" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/threads/Make.vars" beforeDir="false" afterPath="$PROJECT_DIR$/src/threads/Make.vars" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/threads/fixed-point.h" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/threads/thread.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/threads/thread.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/threads/thread.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/threads/thread.h" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/userprog/process.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/userprog/process.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/userprog/syscall.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/userprog/syscall.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/userprog/exception.c" beforeDir="false" afterPath="$PROJECT_DIR$/src/userprog/exception.c" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/userprog/syscall.h" beforeDir="false" afterPath="$PROJECT_DIR$/src/userprog/syscall.h" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/cmake-build-debug/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -47,10 +41,31 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/userprog/syscall.c">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-2">
+              <caret line="124" column="28" selection-start-line="124" selection-start-column="28" selection-end-line="124" selection-end-column="28" />
+              <folding>
+                <element signature="e#0#29#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/threads/interrupt.c">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="185">
+              <caret line="201" selection-start-line="201" selection-end-line="201" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/userprog/syscall.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="153">
-              <caret line="9" column="29" selection-start-line="9" selection-start-column="29" selection-end-line="9" selection-end-column="29" />
+            <state relative-caret-position="340">
+              <caret line="20" selection-start-line="20" selection-end-line="20" />
               <folding>
                 <element signature="e#55#82#0" expanded="true" />
               </folding>
@@ -61,8 +76,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/lib/user/syscall.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="102">
-              <caret line="7" column="18" selection-start-line="7" selection-end-line="8" />
+            <state relative-caret-position="374">
+              <caret line="23" selection-start-line="23" selection-end-line="23" />
               <folding>
                 <element signature="e#59#79#0" expanded="true" />
               </folding>
@@ -73,8 +88,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/lib/user/syscall.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="364">
-              <caret line="66" column="22" selection-start-line="66" selection-start-column="22" selection-end-line="66" selection-end-column="22" />
+            <state relative-caret-position="177">
+              <caret line="70" selection-start-line="70" selection-end-line="70" />
               <folding>
                 <element signature="e#0#20#0" expanded="true" />
               </folding>
@@ -82,13 +97,25 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/userprog/process.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="687">
-              <caret line="61" column="55" selection-start-line="61" selection-start-column="55" selection-end-line="61" selection-end-column="55" />
+            <state relative-caret-position="483">
+              <caret line="49" selection-start-line="49" selection-end-line="49" />
               <folding>
                 <element signature="e#0#29#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/userprog/exception.c">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="460">
+              <caret line="162" column="1" selection-start-line="162" selection-start-column="1" selection-end-line="162" selection-end-column="1" />
+              <folding>
+                <element signature="e#0#31#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -119,30 +146,6 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/threads/synch.h">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="442">
-              <caret line="26" column="5" selection-start-line="26" selection-start-column="5" selection-end-line="26" selection-end-column="5" />
-              <folding>
-                <element signature="e#49#66#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/devices/intq.h">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="697">
-              <caret line="41" selection-start-line="41" selection-end-line="41" />
-              <folding>
-                <element signature="e#47#77#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/threads/thread.h">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="494">
@@ -158,7 +161,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>putc</find>
       <find>wait</find>
       <find>wait(</find>
       <find>, struct</find>
@@ -188,6 +190,7 @@
       <find>thread_create</find>
       <find>push</find>
       <find>start_process</find>
+      <find>fn</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -233,16 +236,17 @@
         <option value="$PROJECT_DIR$/src/utils/Pintos.pm" />
         <option value="$PROJECT_DIR$/src/utils/pintos-gdb" />
         <option value="$PROJECT_DIR$/src/threads/Make.vars" />
-        <option value="$PROJECT_DIR$/src/lib/user/syscall.c" />
         <option value="$PROJECT_DIR$/src/devices/intq.h" />
         <option value="$PROJECT_DIR$/src/devices/intq.c" />
         <option value="$PROJECT_DIR$/src/threads/synch.h" />
-        <option value="$PROJECT_DIR$/src/lib/user/syscall.h" />
-        <option value="$PROJECT_DIR$/src/userprog/syscall.h" />
-        <option value="$PROJECT_DIR$/src/userprog/syscall.c" />
         <option value="$PROJECT_DIR$/src/threads/thread.h" />
         <option value="$PROJECT_DIR$/src/threads/thread.c" />
         <option value="$PROJECT_DIR$/src/userprog/process.c" />
+        <option value="$PROJECT_DIR$/src/lib/user/syscall.c" />
+        <option value="$PROJECT_DIR$/src/lib/user/syscall.h" />
+        <option value="$PROJECT_DIR$/src/userprog/syscall.h" />
+        <option value="$PROJECT_DIR$/src/userprog/syscall.c" />
+        <option value="$PROJECT_DIR$/src/userprog/exception.c" />
       </list>
     </option>
   </component>
@@ -355,7 +359,7 @@
       <updated>1543250520051</updated>
       <workItem from="1543250521600" duration="5027000" />
       <workItem from="1545055147609" duration="9744000" />
-      <workItem from="1545309749892" duration="5628000" />
+      <workItem from="1545309749892" duration="7017000" />
     </task>
     <task id="LOCAL-00001" summary="origin">
       <created>1543252723188</created>
@@ -371,11 +375,18 @@
       <option name="project" value="LOCAL" />
       <updated>1545053102668</updated>
     </task>
-    <option name="localTasksCounter" value="3" />
+    <task id="LOCAL-00003" summary="58 Cases Passed! YAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAY!">
+      <created>1545315528286</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1545315528286</updated>
+    </task>
+    <option name="localTasksCounter" value="4" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="31752000" />
+    <option name="totallyTimeSpent" value="33141000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="25" width="1920" height="998" extended-state="6" />
@@ -469,9 +480,12 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
+    <option name="CHECK_CODE_SMELLS_BEFORE_PROJECT_COMMIT" value="false" />
+    <option name="CHECK_NEW_TODO" value="false" />
     <MESSAGE value="origin" />
     <MESSAGE value="Deleted Deny Writables" />
-    <option name="LAST_COMMIT_MESSAGE" value="Deleted Deny Writables" />
+    <MESSAGE value="58 Cases Passed! YAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAY!" />
+    <option name="LAST_COMMIT_MESSAGE" value="58 Cases Passed! YAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAY!" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/CMakeLists.txt">
@@ -659,16 +673,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/userprog/syscall.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2550">
-          <caret line="150" column="22" selection-start-line="150" selection-start-column="22" selection-end-line="150" selection-end-column="22" />
-          <folding>
-            <element signature="e#0#29#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/lib/stdio.h">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="255">
@@ -703,16 +707,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1167">
           <caret line="96" selection-start-line="96" selection-end-line="96" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/lib/user/syscall.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="364">
-          <caret line="66" column="22" selection-start-line="66" selection-start-column="22" selection-end-line="66" selection-end-column="22" />
-          <folding>
-            <element signature="e#0#20#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -754,26 +748,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/userprog/syscall.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="153">
-          <caret line="9" column="29" selection-start-line="9" selection-start-column="29" selection-end-line="9" selection-end-column="29" />
-          <folding>
-            <element signature="e#55#82#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/lib/user/syscall.h">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="102">
-          <caret line="7" column="18" selection-start-line="7" selection-end-line="8" />
-          <folding>
-            <element signature="e#59#79#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/userprog/tss.c">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="757">
@@ -803,10 +777,67 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/userprog/process.c">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="687">
-          <caret line="61" column="55" selection-start-line="61" selection-start-column="55" selection-end-line="61" selection-end-column="55" />
+        <state relative-caret-position="483">
+          <caret line="49" selection-start-line="49" selection-end-line="49" />
           <folding>
             <element signature="e#0#29#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/threads/interrupt.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="185">
+          <caret line="201" selection-start-line="201" selection-end-line="201" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/lib/user/syscall.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="177">
+          <caret line="70" selection-start-line="70" selection-end-line="70" />
+          <folding>
+            <element signature="e#0#20#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/lib/user/syscall.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="374">
+          <caret line="23" selection-start-line="23" selection-end-line="23" />
+          <folding>
+            <element signature="e#59#79#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/userprog/syscall.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-2">
+          <caret line="124" column="28" selection-start-line="124" selection-start-column="28" selection-end-line="124" selection-end-column="28" />
+          <folding>
+            <element signature="e#0#29#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/userprog/syscall.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="340">
+          <caret line="20" selection-start-line="20" selection-end-line="20" />
+          <folding>
+            <element signature="e#55#82#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/userprog/exception.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="460">
+          <caret line="162" column="1" selection-start-line="162" selection-start-column="1" selection-end-line="162" selection-end-column="1" />
+          <folding>
+            <element signature="e#0#31#0" expanded="true" />
           </folding>
         </state>
       </provider>
