@@ -4,6 +4,7 @@
 #include <debug.h>
 #include <list.h>
 #include <stdint.h>
+#include "synch.h"
 
 /* States in a thread's life cycle. */
 enum thread_status
@@ -23,6 +24,14 @@ typedef int tid_t;
 #define PRI_MIN 0                       /* Lowest priority. */
 #define PRI_DEFAULT 31                  /* Default priority. */
 #define PRI_MAX 63                      /* Highest priority. */
+
+struct child_status {
+    int child_pid;
+    bool was_waited_on;
+    bool is_exit_called;
+    int exit_status;
+    struct list_elem list_elem;
+};
 
 /* A kernel thread or user process.
 
@@ -89,18 +98,30 @@ struct thread
     uint8_t *stack;                     /* Saved stack pointer. */
     int priority;                       /* Priority. */
     struct list_elem allelem;           /* List element for all threads list. */
-    struct file *executable_file;
+
     /* Shared between thread.c and synch.c. */
     struct list_elem elem;              /* List element. */
 
 #ifdef USERPROG
     /* Owned by userprog/process.c. */
     uint32_t *pagedir;                  /* Page directory. */
+    tid_t parent_id;
+    struct list children_status;
+    struct file* exec_file;
 #endif
 
     /* Owned by thread.c. */
     unsigned magic;                     /* Detects stack overflow. */
-  };
+
+
+#define LOAD_STATUS_LOADING 0
+#define LOAD_STATUS_SUCCESS 1
+#define LOAD_STATUS_FAIL -1
+
+    int child_load_status;
+    struct lock lock_child;
+    struct condition cond_child;
+};
 
 /* If false (default), use round-robin scheduler.
    If true, use multi-level feedback queue scheduler.
@@ -137,5 +158,7 @@ int thread_get_nice (void);
 void thread_set_nice (int);
 int thread_get_recent_cpu (void);
 int thread_get_load_avg (void);
+
+struct thread *thread_get_by_id(tid_t id);
 
 #endif /* threads/thread.h */

@@ -14,6 +14,7 @@
 #include "threads/interrupt.h"
 #include "threads/palloc.h"
 #include "threads/vaddr.h"
+#include "syscall.h"
 
 static thread_func start_process NO_RETURN;
 static bool load (const char *cmdline, void (**eip) (void), void **esp);
@@ -27,6 +28,9 @@ process_execute(const char *file_name) {
     char *fn_copy;
     tid_t tid;
 
+    struct child_status *child_status;
+    struct thread *current_thread;
+
     /* Make a copy of FILE_NAME.
        Otherwise there's a race between the caller and load(). */
     fn_copy = palloc_get_page(0);
@@ -38,6 +42,7 @@ process_execute(const char *file_name) {
     /* We do not want the thread to have the raw filename. Instead we want the
      thread’s name to be the executable name. You will need to extract the
      executable name from file_name and pass that in instead. */
+    /* Only assign argv[0] to thread's name */
     char *save_ptr;
     char* temp_file_name = malloc(strlen(file_name)+1);
 
@@ -49,9 +54,20 @@ process_execute(const char *file_name) {
     tid = thread_create (temp_file_name, PRI_DEFAULT, start_process, fn_copy);
 
     free(temp_file_name);
-
     if (tid == TID_ERROR)
         palloc_free_page(fn_copy);
+    else {
+
+        current_thread = thread_current();
+        child_status = calloc(1, sizeof *child_status);
+        if (child_status != NULL) {
+            child_status->child_pid = tid;
+            child_status->is_exit_called = false;
+            child_status->was_waited_on = false;
+            list_push_back(&current_thread->children_status, &child_status->list_elem);
+        }
+    }
+
     return tid;
 }
 
@@ -65,16 +81,31 @@ start_process (void *file_name_)
     bool success;
 
     /* Initialize interrupt frame and load executable. */
-    memset(&if_, 0, sizeof if_);
+    memset (&if_, 0, sizeof if_);
     if_.gs = if_.fs = if_.es = if_.ds = if_.ss = SEL_UDSEG;
     if_.cs = SEL_UCSEG;
     if_.eflags = FLAG_IF | FLAG_MBS;
     success = load(file_name, &if_.eip, &if_.esp);
 
-    /* If load failed, quit. */
-    palloc_free_page(file_name);
+    struct thread *parent = thread_get_by_id(thread_current()->parent_id);
+
+    if (parent != NULL) {
+
+        lock_acquire(&parent->lock_child);
+
+        cond_signal(&parent->cond_child, &parent->lock_child);
+
+        if (success) parent->child_load_status = LOAD_STATUS_SUCCESS;
+        else parent->child_load_status = LOAD_STATUS_FAIL;
+
+        lock_release(&parent->lock_child);
+    }
+
     if (!success)
         thread_exit();
+
+    /* If load failed, quit. */
+    palloc_free_page(pg_round_down(file_name));
 
     /* Start the user process by simulating a return from an
        interrupt, implemented by intr_exit (in
@@ -97,10 +128,40 @@ start_process (void *file_name_)
    does nothing. */
 int
 process_wait(tid_t child_tid UNUSED) {
+    int status = -1;
+    struct thread *current_thread = thread_current();
 
-    while (true);
+    if (child_tid != TID_ERROR) {
 
-    return -1;
+        struct child_status *child_status = NULL;
+
+        struct list_elem *e = list_tail(&current_thread->children_status);
+        while ((e = list_prev(e)) != list_head(&current_thread->children_status)) {
+            child_status = list_entry(e, struct child_status, list_elem);
+
+            if (child_status->child_pid == child_tid)
+                break;
+
+            //TODO:Check if the child status not equals NULL at the end of the loop
+        }
+
+        if (child_status != NULL) {
+
+            lock_acquire(&current_thread->lock_child);
+
+            while (thread_get_by_id(child_tid) != NULL)
+                cond_wait(&current_thread->cond_child, &current_thread->lock_child);
+
+            if (child_status->is_exit_called && !child_status->was_waited_on) {
+                status = child_status->exit_status;
+                child_status->was_waited_on = true;
+            }
+
+            lock_release(&current_thread->lock_child);
+        }
+    }
+
+    return status;
 }
 
 /* Free the current process's resources. */
@@ -110,9 +171,32 @@ process_exit (void)
     struct thread *cur = thread_current();
     uint32_t *pd;
 
+
+    struct list_elem *e;
+    struct list_elem *next;
+    struct child_status *child;
+
+    /*free children list*/
+    e = list_begin(&cur->children_status);
+    while (e != list_tail(&cur->children_status)) {
+        next = list_next(e);
+        child = list_entry (e, struct child_status, list_elem);
+        list_remove(e);
+        free(child);
+        e = next;
+    }
+
+    /* re-enable the file's writable property*/
+    if (cur->exec_file != NULL)
+        file_allow_write (cur->exec_file);
+
+    /* free files whose owner is the current thread*/
+    close_file_by_owner (cur->tid);
+
     /* Destroy the current process's page directory and switch back
        to the kernel-only page directory. */
     pd = cur->pagedir;
+
     if (pd != NULL)
     {
         /* Correct ordering here is crucial.  We must set
@@ -235,8 +319,12 @@ load(const char *file_name, void (**eip)(void), void **esp) {
     if (file == NULL)
     {
         printf("load: %s: open failed\n", file_name);
+        file_close(file);
         goto done;
     }
+
+    t->exec_file = file;
+    file_deny_write(file);
 
     /* Read and verify executable header. */
     if (file_read(file, &ehdr, sizeof ehdr) != sizeof ehdr
@@ -316,7 +404,7 @@ load(const char *file_name, void (**eip)(void), void **esp) {
 
     done:
     /* We arrive here whether the load is successful or not. */
-    file_close(file);
+
     return success;
 }
 
@@ -437,12 +525,14 @@ setup_stack(void **esp, char *raw_file_name) {
     if (kpage != NULL)
     {
         success = install_page(((uint8_t *) PHYS_BASE) - PGSIZE, kpage, true);
+
         if (success) {
             *esp = PHYS_BASE;
-            push_args(esp, raw_file_name);
+
         } else
             palloc_free_page(kpage);
     }
+    push_args(esp, raw_file_name);
     return success;
 }
 
@@ -482,7 +572,6 @@ push_args(void **esp, char* raw_file_name) {
         bytes_count += arg_length;
     }
 
-    // hex_dump(0,raw_file_name,true);
     char *base_pointer = (char*)*esp;
 
     /* Computing and Pushing word-alignment. */
